@@ -1167,6 +1167,13 @@
       border: 1px solid var(--border-subtle);
       border-radius: 4px;
       padding: 6px 10px;
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+    .sort-multi-toggle-row:hover {
+      background: rgba(14, 27, 46, 0.9);
+      border-color: rgba(56, 189, 248, 0.4);
     }
 
     .sort-multi-label {
@@ -2207,7 +2214,7 @@
       flex-shrink: 0;
     }
 
-    .quest-item.is-pointer-dragging {
+    .quest-drag-container {
       position: fixed !important;
       top: 0 !important;
       left: 0 !important;
@@ -2215,14 +2222,26 @@
       pointer-events: none !important;
       z-index: 999999 !important;
       width: var(--drag-w, 360px) !important;
+      transform: translate3d(var(--drag-x, 0px), var(--drag-y, 0px), 0) scale(1.02);
+      transition: none !important;
+      will-change: transform;
+    }
+
+    .quest-drag-container .quest-item.is-pointer-dragging,
+    .quest-drag-container .quest-item.is-pointer-dragging.selected-quest {
+      position: relative !important;
+      top: auto !important;
+      left: auto !important;
+      margin: 0 !important;
+      pointer-events: none !important;
+      z-index: 10 !important;
+      width: 100% !important;
       box-shadow: 0 16px 36px rgba(0, 0, 0, 0.95), 0 0 24px var(--dropdown-glow) !important;
       border: 1px solid var(--accent-cyan) !important;
       border-left: 4px solid var(--accent-cyan) !important;
       background: #0e1b2e !important;
-      opacity: 0.96;
-      transform: translate3d(var(--drag-x, 0px), var(--drag-y, 0px), 0) scale(1.02);
-      transition: none !important;
-      will-change: transform;
+      opacity: 1 !important;
+      transform: none !important;
     }
 
     .quest-item-placeholder {
@@ -2233,6 +2252,90 @@
       box-shadow: inset 0 0 12px var(--dropdown-glow);
       transition: all 0.15s ease;
       flex-shrink: 0;
+    }
+
+    /* Quest Card Selected State */
+    .quest-item.selected-quest {
+      background: rgba(56, 189, 248, 0.16) !important;
+      border-color: rgba(56, 189, 248, 0.65) !important;
+      border-left: 4px solid var(--accent-cyan) !important;
+      box-shadow: 0 0 14px rgba(56, 189, 248, 0.25);
+    }
+
+    /* Multi-Selection Order Priority Badge */
+    .quest-select-order-badge {
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: #050a12;
+      background: var(--accent-cyan);
+      border-radius: 10px;
+      padding: 1px 6px;
+      box-shadow: 0 0 8px var(--accent-cyan);
+      flex-shrink: 0;
+      line-height: 1.3;
+    }
+
+    /* Multi-Quest Placeholder Wrap */
+    .quest-multi-placeholder-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      width: 100%;
+      flex-shrink: 0;
+      transition: all 0.15s ease;
+    }
+
+    .category-card.is-source-cat-zone {
+      border-color: rgba(245, 158, 11, 0.65) !important;
+      background: rgba(245, 158, 11, 0.08) !important;
+      box-shadow: 0 0 16px rgba(245, 158, 11, 0.25) !important;
+    }
+
+    .category-card.drag-target-zone {
+      border-color: var(--accent-cyan) !important;
+      background: rgba(56, 189, 248, 0.14) !important;
+      box-shadow: 0 0 20px var(--dropdown-glow) !important;
+      transform: scale(1.01);
+    }
+
+    /* Multi-drag Windows-style outline shadow layers (Solid, Non-translucent) */
+    .quest-drag-container .drag-shadow-layer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: 1px solid var(--accent-cyan) !important;
+      border-left: 4px solid var(--accent-cyan) !important;
+      border-radius: 4px;
+      background: #0e1b2e !important;
+      opacity: 1 !important;
+      pointer-events: none;
+      box-sizing: border-box;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.85);
+    }
+    .quest-drag-container .drag-shadow-layer.shadow-1 {
+      transform: translate(6px, 6px);
+      z-index: 5 !important;
+    }
+    .quest-drag-container .drag-shadow-layer.shadow-2 {
+      transform: translate(12px, 12px);
+      z-index: 1 !important;
+    }
+
+    .quest-drag-container .multi-drag-count-badge {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      background: var(--accent-cyan);
+      color: #050a12;
+      font-weight: 800;
+      font-size: 0.75rem;
+      padding: 2px 7px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px var(--accent-cyan);
+      z-index: 20 !important;
+      pointer-events: none;
     }
 
     @keyframes jumpFlash {
@@ -2660,14 +2763,62 @@
     #addAllConfirmModal,
     #importPersonalModal,
     #exportPersonalModal,
+    #deleteMultiQuestModal,
     #deleteCategoryModal.active,
     #deleteQuestModal.active,
     #deleteTagModal.active,
     #removeQuestTagModal.active,
     #addAllConfirmModal.active,
     #importPersonalModal.active,
-    #exportPersonalModal.active {
+    #exportPersonalModal.active,
+    #deleteMultiQuestModal.active {
       z-index: 99999999 !important;
+    }
+
+    #reviewMultiDeleteModal,
+    #reviewMultiDeleteModal.active {
+      z-index: 999999999 !important;
+    }
+
+    .review-multi-delete-list {
+      max-height: 300px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin: 10px 0;
+    }
+
+    .review-multi-delete-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 12px;
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid var(--border-subtle);
+      border-radius: 4px;
+      font-size: 0.82rem;
+      color: var(--text-main);
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
+    }
+
+    .review-multi-delete-item:hover {
+      background: rgba(14, 27, 46, 0.7);
+      border-color: rgba(56, 189, 248, 0.4);
+    }
+
+    .review-multi-delete-item .deselect-hint {
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      opacity: 0.6;
+      transition: opacity 0.15s;
+    }
+
+    .review-multi-delete-item:hover .deselect-hint {
+      opacity: 1;
+      color: var(--accent-red);
     }
 
     .toggle-slider-compact {
@@ -2856,18 +3007,25 @@
     }
 
     .modal-checkbox-label {
-      display: inline-flex;
+      display: flex;
       align-items: center;
       gap: 8px;
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       color: var(--text-dim);
       cursor: pointer;
       user-select: none;
-      margin-top: -4px;
-      transition: color 0.15s;
+      width: 100%;
+      box-sizing: border-box;
+      padding: 8px 12px;
+      border-radius: 4px;
+      border: 1px solid var(--border-subtle);
+      background: rgba(0, 0, 0, 0.25);
+      transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
     }
 
     .modal-checkbox-label:hover {
+      background: rgba(14, 27, 46, 0.7);
+      border-color: rgba(56, 189, 248, 0.4);
       color: var(--text-main);
     }
 
@@ -2876,6 +3034,7 @@
       height: 16px;
       cursor: pointer;
       accent-color: var(--accent-red);
+      flex-shrink: 0;
     }
 
     .custom-checkbox-wrap {
@@ -3689,6 +3848,10 @@
       transform: translateY(-1px);
       box-shadow: 0 4px 12px rgba(56, 189, 248, 0.15);
     }
+    .preset-sync-card:hover {
+      background: rgba(14, 27, 46, 0.9) !important;
+      border-color: rgba(56, 189, 248, 0.4) !important;
+    }
   </style>
 </head>
 <body data-tab="all">
@@ -3708,15 +3871,20 @@
       </div>
 
       <!-- Sync Progress Switch -->
-      <div class="preset-sync-card" id="presetSyncCard" title="Automatically keep completion checks in sync between Explorer and Personal presets for matching quests" style="display: flex; align-items: center; justify-content: space-between; padding: 6px 10px; background: rgba(8, 14, 24, 0.95); border: 1px solid var(--border-subtle); border-radius: 6px; font-size: 0.76rem;">
-        <span style="color: var(--text-dim); display: flex; align-items: center; gap: 5px;">
-          <span style="font-size: 0.85rem; color: var(--theme-active);">⇄</span>
-          <span>Sync Progress</span>
+      <div class="preset-sync-card" id="presetSyncCard" onclick="togglePresetSyncCardClick(event)" style="display: flex; flex-direction: column; gap: 5px; padding: 8px 10px; background: rgba(0, 0, 0, 0.35); border: 1px solid var(--border-subtle); border-radius: 4px; cursor: pointer; user-select: none; transition: background 0.15s ease, border-color 0.15s ease;">
+        <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+          <span style="color: var(--text-dim); font-size: 0.76rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 5px;">
+            <span style="font-size: 0.85rem; color: var(--theme-active);">⇄</span>
+            <span>Sync Progress</span>
+          </span>
+          <button type="button" class="btn-multi-sort-toggle" id="btnSyncPresetToggle" style="pointer-events: none;">
+            <span class="multi-sort-switch-thumb"></span>
+            <span id="syncPresetToggleText">Off</span>
+          </button>
+        </div>
+        <span style="font-size: 0.71rem; color: var(--text-dim); line-height: 1.35;">
+          Automatically mirrors completion progress between Explorer and Personal for shared matching quests.
         </span>
-        <label class="toggle-switch-compact" style="position: relative; display: inline-block; width: 28px; height: 16px; margin: 0; cursor: pointer;">
-          <input type="checkbox" id="syncPresetsCheckbox" onchange="toggleCrossPresetSync(this.checked)" style="opacity: 0; width: 0; height: 0;">
-          <span class="toggle-slider-compact"></span>
-        </label>
       </div>
 
       <script>
@@ -3728,14 +3896,14 @@
             document.body.setAttribute("data-tab", t);
             var btnC = document.getElementById("btnPresetComplete");
             var btnP = document.getElementById("btnPresetPersonal");
-            var syncCb = document.getElementById("syncPresetsCheckbox");
             if (btnC && btnP) {
               btnC.classList.toggle("active", p === "complete");
               btnP.classList.toggle("active", p === "personal");
             }
-            if (syncCb) {
-              syncCb.checked = sync;
-            }
+            var syncBtn = document.getElementById("btnSyncPresetToggle");
+            var syncText = document.getElementById("syncPresetToggleText");
+            if (syncBtn) syncBtn.classList.toggle("active", sync);
+            if (syncText) syncText.textContent = sync ? "On" : "Off";
           } catch(e) {}
         })();
       </script>
@@ -3783,8 +3951,8 @@
         <div style="display: flex; justify-content: space-between; align-items: center;">
           <h3 style="margin: 0;">Backup</h3>
           <div style="display: flex; gap: 6px;">
-            <button type="button" class="btn-sm-theme" onclick="exportPersonalPresetData()" style="padding: 5px 10px; font-size: 0.76rem;" title="Export Personal Preset JSON">⤓ Export</button>
-            <button type="button" class="btn-sm-theme" onclick="triggerImportPersonalPreset()" style="padding: 5px 10px; font-size: 0.76rem;" title="Import Personal Preset JSON">⤒ Import</button>
+            <button type="button" class="btn-sm-theme" onclick="exportPersonalPresetData()" style="padding: 5px 10px; font-size: 0.76rem;">⤓ Export</button>
+            <button type="button" class="btn-sm-theme" onclick="triggerImportPersonalPreset()" style="padding: 5px 10px; font-size: 0.76rem;">⤒ Import</button>
           </div>
         </div>
         <input type="file" id="personalImportFileInput" accept=".json" style="display: none;" onchange="handlePersonalPresetFileSelected(event)">
@@ -3912,18 +4080,18 @@
             </div>
 
             <!-- Exclude Mode Toggle -->
-            <div class="sort-multi-toggle-row">
+            <div class="sort-multi-toggle-row" onclick="toggleFilterExcludeMode(event)">
               <span class="sort-multi-label">Exclude Mode</span>
-              <button type="button" class="btn-multi-sort-toggle" id="btnFilterExcludeMode" onclick="toggleFilterExcludeMode(event)">
+              <button type="button" class="btn-multi-sort-toggle" id="btnFilterExcludeMode" style="pointer-events: none;">
                 <span class="multi-sort-switch-thumb"></span>
                 <span id="filterExcludeModeToggleText">Off</span>
               </button>
             </div>
 
             <!-- Tab Specific Scope Toggle (Above Search Bar) -->
-            <div class="sort-multi-toggle-row">
+            <div class="sort-multi-toggle-row" onclick="toggleFilterScopeTab(event)">
               <span class="sort-multi-label">Apply to this Tab only</span>
-              <button type="button" class="btn-multi-sort-toggle" id="btnFilterScopeTab" onclick="toggleFilterScopeTab(event)">
+              <button type="button" class="btn-multi-sort-toggle" id="btnFilterScopeTab" style="pointer-events: none;">
                 <span class="multi-sort-switch-thumb"></span>
                 <span id="filterScopeToggleText">Off</span>
               </button>
@@ -3987,18 +4155,18 @@
             </div>
 
             <!-- Multi-Sort Mode Toggle -->
-            <div class="sort-multi-toggle-row">
+            <div class="sort-multi-toggle-row" onclick="toggleMultiSortMode(event)">
               <span class="sort-multi-label">Multi-Sort Mode</span>
-              <button type="button" class="btn-multi-sort-toggle" id="btnMultiSortToggle" onclick="toggleMultiSortMode(event)">
+              <button type="button" class="btn-multi-sort-toggle" id="btnMultiSortToggle" style="pointer-events: none;">
                 <span class="multi-sort-switch-thumb"></span>
                 <span id="multiSortToggleText">Off</span>
               </button>
             </div>
 
             <!-- Tab Specific Scope Toggle (Under Multi-Sort Mode Toggle) -->
-            <div class="sort-multi-toggle-row">
+            <div class="sort-multi-toggle-row" onclick="toggleSortScopeTab(event)">
               <span class="sort-multi-label">Apply to this Tab only</span>
-              <button type="button" class="btn-multi-sort-toggle" id="btnSortScopeTab" onclick="toggleSortScopeTab(event)">
+              <button type="button" class="btn-multi-sort-toggle" id="btnSortScopeTab" style="pointer-events: none;">
                 <span class="multi-sort-switch-thumb"></span>
                 <span id="sortScopeToggleText">Off</span>
               </button>
@@ -4155,13 +4323,13 @@
   <div class="modal-overlay" id="addQuestModal">
     <div class="modal-box" style="max-width: 480px;">
       <div style="display: flex; justify-content: space-between; align-items: center;">
-        <h3 style="display: flex; align-items: center; gap: 8px;">
+        <h3 style="display: flex; align-items: center; gap: 8px; margin: 0;">
           <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
             <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
           </svg>
           <span>Add Quest</span>
         </h3>
-        <button type="button" class="btn-delete-quest" onclick="closeModal('addQuestModal')" style="font-size: 1.1rem; opacity: 0.7;">✕</button>
+        <button type="button" class="btn-delete-quest" onclick="closeModal('addQuestModal', event)" style="font-size: 1.1rem; opacity: 0.7;">✕</button>
       </div>
 
       <form id="modalQuestForm" onsubmit="submitModalAddQuest(event)" style="display: flex; flex-direction: column; gap: 12px; margin-top: 10px;">
@@ -4192,7 +4360,7 @@
         </div>
 
         <div class="modal-actions" style="margin-top: 10px;">
-          <button type="button" class="btn-secondary" onclick="closeModal('addQuestModal')">Cancel</button>
+          <button type="button" class="btn-secondary" onclick="closeModal('addQuestModal', event)">Cancel</button>
           <button type="submit" class="btn-primary-theme">+ Add Quest</button>
         </div>
       </form>
@@ -4202,30 +4370,76 @@
   <!-- Custom Edit Category Modal -->
   <div class="modal-overlay" id="editCategoryModal">
     <div class="modal-box">
-      <h3>Edit Category</h3>
-      <div class="modal-inputs">
-        <input type="text" id="editCatTitle" placeholder="Category Title..." required>
-        <input type="text" id="editCatSubtitle" placeholder="Subtitle / Region...">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="margin: 0;">Edit Category</h3>
+        <button type="button" class="btn-delete-quest" onclick="closeModal('editCategoryModal', event)" style="font-size: 1.1rem; opacity: 0.7;">✕</button>
       </div>
-      <div class="modal-actions">
-        <button class="btn-secondary" onclick="closeModal('editCategoryModal')">Cancel</button>
-        <button onclick="saveCategoryEdit()">Save</button>
-      </div>
+      <form onsubmit="event.preventDefault(); saveCategoryEdit();" style="display: flex; flex-direction: column; gap: 12px; margin-top: 10px;">
+        <div class="modal-inputs" style="display: flex; flex-direction: column; gap: 8px;">
+          <div>
+            <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 4px;">Category Title</label>
+            <input type="text" id="editCatTitle" placeholder="Category Title..." required autocomplete="off">
+          </div>
+          <div>
+            <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 4px;">Subtitle / Region (Optional)</label>
+            <input type="text" id="editCatSubtitle" placeholder="Subtitle / Region..." autocomplete="off">
+          </div>
+        </div>
+        <div class="modal-actions" style="margin-top: 6px;">
+          <button type="button" class="btn-secondary" onclick="closeModal('editCategoryModal', event)">Cancel</button>
+          <button type="submit" class="btn-primary-theme">Save</button>
+        </div>
+      </form>
     </div>
   </div>
 
   <!-- Custom Delete Quest Modal -->
   <div class="modal-overlay" id="deleteQuestModal">
     <div class="modal-box">
-      <h3 style="color: var(--accent-red);">Remove Quest</h3>
-      <p id="deleteConfirmText">Are you sure you want to remove this quest?</p>
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="color: var(--accent-red); margin: 0;">Remove Quest</h3>
+        <button type="button" class="btn-delete-quest" onclick="closeModal('deleteQuestModal', event)" style="font-size: 1.1rem; opacity: 0.7;">✕</button>
+      </div>
+      <p id="deleteConfirmText" style="margin-top: 10px;">Are you sure you want to remove this quest?</p>
       <label class="modal-checkbox-label">
         <input type="checkbox" id="dontAskDeleteQuest">
         <span>Don't ask again</span>
       </label>
       <div class="modal-actions">
-        <button class="btn-secondary" onclick="closeModal('deleteQuestModal')">Cancel</button>
-        <button class="btn-danger" onclick="confirmDeleteQuest()">Remove</button>
+        <button type="button" class="btn-secondary" onclick="closeModal('deleteQuestModal', event)">Cancel</button>
+        <button type="button" class="btn-danger" onclick="confirmDeleteQuest()">Remove</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Multi-Delete Quest Modal -->
+  <div class="modal-overlay" id="deleteMultiQuestModal">
+    <div class="modal-box">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="color: var(--accent-red); margin: 0;">Remove Selected Quests</h3>
+        <button type="button" class="btn-delete-quest" onclick="closeModal('deleteMultiQuestModal', event)" style="font-size: 1.1rem; opacity: 0.7;">✕</button>
+      </div>
+      <p id="deleteMultiConfirmText" style="margin-top: 10px;"></p>
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" onclick="openReviewMultiDeleteModal()">Review</button>
+        <button type="button" class="btn-secondary" onclick="closeModal('deleteMultiQuestModal', event)">Cancel</button>
+        <button type="button" class="btn-danger" onclick="confirmDeleteMultiQuests()">Remove All</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Review Multi-Delete Quest Modal -->
+  <div class="modal-overlay" id="reviewMultiDeleteModal">
+    <div class="modal-box" style="max-width: 480px;">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="color: var(--accent-red); margin: 0;">Review Selected Quests</h3>
+        <button type="button" class="btn-delete-quest" onclick="closeModal('reviewMultiDeleteModal', event)" style="font-size: 1.1rem; opacity: 0.7;">✕</button>
+      </div>
+      <p style="margin-top: 8px; font-size: 0.78rem; color: var(--text-dim);">Click a quest to deselect it from deletion.</p>
+      <div class="review-multi-delete-list" id="reviewMultiDeleteList"></div>
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" onclick="closeModal('reviewMultiDeleteModal', event)">Back</button>
+        <button type="button" class="btn-danger" onclick="confirmDeleteMultiQuests()">Remove All</button>
       </div>
     </div>
   </div>
@@ -4233,18 +4447,21 @@
   <!-- Custom Delete Category Modal -->
   <div class="modal-overlay" id="deleteCategoryModal">
     <div class="modal-box">
-      <h3 style="color: var(--accent-red); display: flex; align-items: center; gap: 8px;">
-        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
-        <span>Delete Category</span>
-      </h3>
-      <p id="deleteCategoryConfirmText" style="line-height: 1.45;"></p>
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="color: var(--accent-red); display: flex; align-items: center; gap: 8px; margin: 0;">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+          <span>Delete Category</span>
+        </h3>
+        <button type="button" class="btn-delete-quest" onclick="closeModal('deleteCategoryModal', event)" style="font-size: 1.1rem; opacity: 0.7;">✕</button>
+      </div>
+      <p id="deleteCategoryConfirmText" style="line-height: 1.45; margin-top: 10px;"></p>
       <label class="modal-checkbox-label" style="margin-top: 10px; cursor: pointer; display: flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.25); padding: 8px 12px; border-radius: 4px; border: 1px solid var(--border-subtle);">
         <input type="checkbox" id="deleteCategoryQuestsCheckbox" style="accent-color: var(--accent-red); width: 16px; height: 16px; cursor: pointer;">
         <span style="font-size: 0.82rem; color: #ff8585; font-weight: 500;">Also permanently delete all quests in this category</span>
       </label>
       <div class="modal-actions" style="margin-top: 14px;">
-        <button class="btn-secondary" onclick="closeModal('deleteCategoryModal')">Cancel</button>
-        <button class="btn-danger" onclick="confirmDeleteCategory()">Delete</button>
+        <button type="button" class="btn-secondary" onclick="closeModal('deleteCategoryModal', event)">Cancel</button>
+        <button type="button" class="btn-danger" onclick="confirmDeleteCategory()">Delete</button>
       </div>
     </div>
   </div>
@@ -4252,17 +4469,20 @@
   <!-- Custom Delete Tag Modal (Manage Tags) -->
   <div class="modal-overlay" id="deleteTagModal">
     <div class="modal-box">
-      <h3 style="color: var(--accent-red); display: flex; align-items: center; gap: 8px;">
-        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
-        <span>Delete Tag</span>
-      </h3>
-      <p id="deleteTagConfirmText" style="line-height: 1.45;">Are you sure you want to delete this tag? It will be removed from all quests.</p>
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="color: var(--accent-red); display: flex; align-items: center; gap: 8px; margin: 0;">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+          <span>Delete Tag</span>
+        </h3>
+        <button type="button" class="btn-delete-quest" onclick="closeModal('deleteTagModal', event)" style="font-size: 1.1rem; opacity: 0.7;">✕</button>
+      </div>
+      <p id="deleteTagConfirmText" style="line-height: 1.45; margin-top: 10px;">Are you sure you want to delete this tag? It will be removed from all quests.</p>
       <label class="modal-checkbox-label">
         <input type="checkbox" id="dontAskDeleteTag">
         <span>Don't ask again</span>
       </label>
       <div class="modal-actions">
-        <button type="button" class="btn-secondary" onclick="closeModal('deleteTagModal')">Cancel</button>
+        <button type="button" class="btn-secondary" onclick="closeModal('deleteTagModal', event)">Cancel</button>
         <button type="button" class="btn-danger" onclick="confirmDeleteTagAction()">Delete</button>
       </div>
     </div>
@@ -4271,17 +4491,20 @@
   <!-- Custom Remove Tag from Quest Modal (Quest Pill ✕) -->
   <div class="modal-overlay" id="removeQuestTagModal">
     <div class="modal-box">
-      <h3 style="color: var(--accent-red); display: flex; align-items: center; gap: 8px;">
-        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
-        <span>Remove Tag from Quest</span>
-      </h3>
-      <p id="removeQuestTagConfirmText" style="line-height: 1.45;">Are you sure you want to remove this tag from the quest?</p>
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="color: var(--accent-red); display: flex; align-items: center; gap: 8px; margin: 0;">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+          <span>Remove Tag from Quest</span>
+        </h3>
+        <button type="button" class="btn-delete-quest" onclick="closeModal('removeQuestTagModal', event)" style="font-size: 1.1rem; opacity: 0.7;">✕</button>
+      </div>
+      <p id="removeQuestTagConfirmText" style="line-height: 1.45; margin-top: 10px;">Are you sure you want to remove this tag from the quest?</p>
       <label class="modal-checkbox-label">
         <input type="checkbox" id="dontAskRemoveQuestTag">
         <span>Don't ask again</span>
       </label>
       <div class="modal-actions">
-        <button type="button" class="btn-secondary" onclick="closeModal('removeQuestTagModal')">Cancel</button>
+        <button type="button" class="btn-secondary" onclick="closeModal('removeQuestTagModal', event)">Cancel</button>
         <button type="button" class="btn-danger" onclick="confirmRemoveQuestTagAction()">Remove</button>
       </div>
     </div>
@@ -4290,17 +4513,20 @@
   <!-- Custom Add All Quests Confirmation Modal -->
   <div class="modal-overlay" id="addAllConfirmModal">
     <div class="modal-box" style="max-width: 450px;">
-      <h3 style="color: var(--accent-cyan); display: flex; align-items: center; gap: 8px;">
-        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 5v14M5 12h14"></path>
-        </svg>
-        <span id="addAllModalTitle">Restore Missing Quests</span>
-      </h3>
-      <p id="addAllConfirmText" style="line-height: 1.45; color: var(--text-main); margin: 0;"></p>
-      <div id="addAllScopeInfo" style="background: rgba(8, 14, 24, 0.7); border: 1px solid var(--border-subtle); border-radius: 6px; padding: 10px 12px; font-size: 0.82rem; color: var(--text-dim); line-height: 1.5; display: flex; flex-direction: column; gap: 4px;">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="color: var(--accent-cyan); display: flex; align-items: center; gap: 8px; margin: 0;">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 5v14M5 12h14"></path>
+          </svg>
+          <span id="addAllModalTitle">Restore Missing Quests</span>
+        </h3>
+        <button type="button" class="btn-delete-quest" onclick="closeModal('addAllConfirmModal', event)" style="font-size: 1.1rem; opacity: 0.7;">✕</button>
       </div>
-      <div class="modal-actions" style="margin-top: 6px;">
-        <button type="button" class="btn-secondary" onclick="closeModal('addAllConfirmModal')">Cancel</button>
+      <p id="addAllConfirmText" style="line-height: 1.45; color: var(--text-main); margin: 10px 0 0 0;"></p>
+      <div id="addAllScopeInfo" style="background: rgba(8, 14, 24, 0.7); border: 1px solid var(--border-subtle); border-radius: 6px; padding: 10px 12px; font-size: 0.82rem; color: var(--text-dim); line-height: 1.5; display: flex; flex-direction: column; gap: 4px; margin-top: 8px;">
+      </div>
+      <div class="modal-actions" style="margin-top: 8px;">
+        <button type="button" class="btn-secondary" onclick="closeModal('addAllConfirmModal', event)">Cancel</button>
         <button type="button" class="btn-primary-theme" id="btnConfirmAddAllAction" onclick="executeRestoreCompleteQuests()">Add All Quests</button>
       </div>
     </div>
@@ -4309,21 +4535,24 @@
   <!-- Custom Import Personal Preset Modal -->
   <div class="modal-overlay" id="importPersonalModal">
     <div class="modal-box" style="max-width: 480px;">
-      <h3 style="color: var(--accent-cyan); display: flex; align-items: center; gap: 8px;">
-        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-          <polyline points="17 8 12 3 7 8"></polyline>
-          <line x1="12" y1="3" x2="12" y2="15"></line>
-        </svg>
-        <span>Import Personal Preset</span>
-      </h3>
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="color: var(--accent-cyan); display: flex; align-items: center; gap: 8px; margin: 0;">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="17 8 12 3 7 8"></polyline>
+            <line x1="12" y1="3" x2="12" y2="15"></line>
+          </svg>
+          <span>Import Personal Preset</span>
+        </h3>
+        <button type="button" class="btn-delete-quest" onclick="closeModal('importPersonalModal', event)" style="font-size: 1.1rem; opacity: 0.7;">✕</button>
+      </div>
       
       <!-- Summary Box -->
-      <div id="importSummaryBox" style="background: rgba(8, 14, 24, 0.8); border: 1px solid var(--border-subtle); border-radius: 6px; padding: 10px 12px; font-size: 0.82rem; color: var(--text-dim); line-height: 1.5;">
+      <div id="importSummaryBox" style="background: rgba(8, 14, 24, 0.8); border: 1px solid var(--border-subtle); border-radius: 6px; padding: 10px 12px; font-size: 0.82rem; color: var(--text-dim); line-height: 1.5; margin-top: 10px;">
       </div>
 
       <!-- Mode selection: Add on top vs Overwrite -->
-      <div style="display: flex; flex-direction: column; gap: 8px;">
+      <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 8px;">
         <span style="font-size: 0.84rem; font-weight: 600; color: #fff;">Import Method:</span>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
           <label style="display: flex; flex-direction: column; gap: 4px; padding: 10px; background: rgba(255,255,255,0.03); border: 1px solid var(--border-subtle); border-radius: 6px; cursor: pointer; transition: all 0.15s;" id="importModeMergeWrap">
@@ -4344,13 +4573,13 @@
       </div>
 
       <!-- Deduplication Toggle -->
-      <label class="modal-checkbox-label" style="cursor: pointer; display: flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.25); padding: 8px 12px; border-radius: 4px; border: 1px solid var(--border-subtle); margin-top: 2px;">
+      <label class="modal-checkbox-label" style="cursor: pointer; display: flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.25); padding: 8px 12px; border-radius: 4px; border: 1px solid var(--border-subtle); margin-top: 4px;">
         <input type="checkbox" id="importExcludeExactMatches" checked style="accent-color: var(--accent-cyan); width: 16px; height: 16px; cursor: pointer;">
         <span style="font-size: 0.8rem; color: var(--text-main);">Skip duplicate quests</span>
       </label>
 
-      <div class="modal-actions" style="margin-top: 6px;">
-        <button type="button" class="btn-secondary" onclick="closeModal('importPersonalModal')">Cancel</button>
+      <div class="modal-actions" style="margin-top: 8px;">
+        <button type="button" class="btn-secondary" onclick="closeModal('importPersonalModal', event)">Cancel</button>
         <button type="button" class="btn-primary-theme" onclick="executeImportPersonalPreset()">Confirm Import</button>
       </div>
     </div>
@@ -4359,16 +4588,19 @@
   <!-- Custom Export Personal Preset Modal -->
   <div class="modal-overlay" id="exportPersonalModal">
     <div class="modal-box" style="max-width: 440px;">
-      <h3 style="color: var(--accent-cyan); display: flex; align-items: center; gap: 8px;">
-        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-          <polyline points="7 10 12 15 17 10"></polyline>
-          <line x1="12" y1="15" x2="12" y2="3"></line>
-        </svg>
-        <span>Export Personal Preset</span>
-      </h3>
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="color: var(--accent-cyan); display: flex; align-items: center; gap: 8px; margin: 0;">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          <span>Export Personal Preset</span>
+        </h3>
+        <button type="button" class="btn-delete-quest" onclick="closeModal('exportPersonalModal', event)" style="font-size: 1.1rem; opacity: 0.7;">✕</button>
+      </div>
       
-      <p style="font-size: 0.82rem; color: var(--text-dim); margin: 0; line-height: 1.45;">
+      <p style="font-size: 0.82rem; color: var(--text-dim); margin: 10px 0 4px 0; line-height: 1.45;">
         Select what data to include in your JSON export file:
       </p>
 
@@ -4388,8 +4620,8 @@
         </label>
       </div>
 
-      <div class="modal-actions" style="margin-top: 6px;">
-        <button type="button" class="btn-secondary" onclick="closeModal('exportPersonalModal')">Cancel</button>
+      <div class="modal-actions" style="margin-top: 8px;">
+        <button type="button" class="btn-secondary" onclick="closeModal('exportPersonalModal', event)">Cancel</button>
         <button type="button" class="btn-primary-theme" onclick="executeExportPersonalPreset()">Export File</button>
       </div>
     </div>
@@ -4399,13 +4631,13 @@
   <div class="modal-overlay" id="manageCategoriesModal">
     <div class="modal-box" style="max-width: 520px;">
       <div style="display: flex; justify-content: space-between; align-items: center;">
-        <h3 style="display: flex; align-items: center; gap: 8px;">
+        <h3 style="display: flex; align-items: center; gap: 8px; margin: 0;">
           <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
             <path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/>
           </svg>
           <span>Manage Categories</span>
         </h3>
-        <button type="button" class="btn-delete-quest" onclick="closeModal('manageCategoriesModal')" style="font-size: 1.1rem; opacity: 0.7;">✕</button>
+        <button type="button" class="btn-delete-quest" onclick="closeModal('manageCategoriesModal', event)" style="font-size: 1.1rem; opacity: 0.7;">✕</button>
       </div>
 
       <!-- Tab Pills across top of modal -->
@@ -4442,7 +4674,7 @@
       </div>
 
       <div class="modal-actions">
-        <button class="btn-secondary" onclick="closeModal('manageCategoriesModal')">Close</button>
+        <button type="button" class="btn-secondary" onclick="closeModal('manageCategoriesModal', event)">Close</button>
       </div>
     </div>
   </div>
@@ -4451,13 +4683,13 @@
   <div class="modal-overlay" id="manageTagsModal">
     <div class="modal-box" style="max-width: 480px;">
       <div style="display: flex; justify-content: space-between; align-items: center;">
-        <h3 style="display: flex; align-items: center; gap: 8px;">
+        <h3 style="display: flex; align-items: center; gap: 8px; margin: 0;">
           <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
             <path d="M21.41 11.58l-9-9C12.05 2.22 11.55 2 11 2H4c-1.1 0-2 .9-2 2v7c0 .55.22 1.05.59 1.42l9 9c.36.36.86.58 1.41.58.55 0 1.05-.22 1.41-.59l7-7c.37-.36.59-.86.59-1.41 0-.55-.23-1.06-.59-1.42zM5.5 7C4.67 7 4 6.33 4 5.5S4.67 4 5.5 4 7 4.67 7 5.5 6.33 7 5.5 7z"/>
           </svg>
           <span>Manage Tags</span>
         </h3>
-        <button type="button" class="btn-delete-quest" onclick="closeModal('manageTagsModal')" style="font-size: 1.1rem; opacity: 0.7;">✕</button>
+        <button type="button" class="btn-delete-quest" onclick="closeModal('manageTagsModal', event)" style="font-size: 1.1rem; opacity: 0.7;">✕</button>
       </div>
 
       <!-- Add New Tag Section -->
@@ -4480,7 +4712,7 @@
       </div>
 
       <div class="modal-actions">
-        <button class="btn-secondary" onclick="closeModal('manageTagsModal')">Close</button>
+        <button type="button" class="btn-secondary" onclick="closeModal('manageTagsModal', event)">Close</button>
       </div>
     </div>
   </div>
@@ -4489,10 +4721,10 @@
   <div class="modal-overlay" id="questTagModal">
     <div class="modal-box" style="max-width: 440px;">
       <div style="display: flex; justify-content: space-between; align-items: center;">
-        <h3 id="questTagModalTitle" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 0.95rem;">Tags for Quest</h3>
-        <button type="button" class="btn-delete-quest" onclick="closeModal('questTagModal')" style="font-size: 1.1rem; opacity: 0.7;">✕</button>
+        <h3 id="questTagModalTitle" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 0.95rem; margin: 0;">Tags for Quest</h3>
+        <button type="button" class="btn-delete-quest" onclick="closeModal('questTagModal', event)" style="font-size: 1.1rem; opacity: 0.7;">✕</button>
       </div>
-      <p style="font-size: 0.8rem; color: var(--text-dim); margin-top: -8px;">Select tags to attach or detach from this quest:</p>
+      <p style="font-size: 0.8rem; color: var(--text-dim); margin-top: 6px;">Select tags to attach or detach from this quest:</p>
 
       <div class="manage-tags-list" id="questTagModalList" style="max-height: 220px;"></div>
 
@@ -4510,7 +4742,7 @@
       </div>
 
       <div class="modal-actions">
-        <button class="btn-primary-theme" onclick="closeModal('questTagModal')">Done</button>
+        <button type="button" class="btn-primary-theme" onclick="closeModal('questTagModal', event)">Done</button>
       </div>
     </div>
   </div>
@@ -4524,7 +4756,7 @@
           <h3 id="questInfoTitle" style="font-size: 1.08rem; color: #fff; margin: 0; word-break: break-word; line-height: 1.3;">Quest Name</h3>
           <span id="questInfoCategory" style="font-size: 0.78rem; color: var(--text-dim);">Category • Tab</span>
         </div>
-        <button type="button" class="btn-delete-quest" onclick="closeModal('questInfoModal')" style="font-size: 1.1rem; opacity: 0.7;">✕</button>
+        <button type="button" class="btn-delete-quest" onclick="closeModal('questInfoModal', event)" style="font-size: 1.1rem; opacity: 0.7;">✕</button>
       </div>
 
       <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 6px;">
@@ -5276,6 +5508,80 @@ complete: {
     localStorage.removeItem("wuwa_v2_skip_delete_tag_confirm");
     localStorage.removeItem("wuwa_v2_skip_remove_quest_tag_confirm");
 
+    /* Reorder Undo Stack (up to 10 entries) */
+    const REORDER_UNDO_MAX = 10;
+    let reorderUndoStack = [];
+
+    function pushReorderUndo() {
+      reorderUndoStack.push({
+        quests: JSON.parse(JSON.stringify(quests)),
+        collapsed: JSON.parse(JSON.stringify(collapsedCategories))
+      });
+      if (reorderUndoStack.length > REORDER_UNDO_MAX) {
+        reorderUndoStack.shift();
+      }
+    }
+
+    function undoReorder() {
+      if (reorderUndoStack.length === 0) return;
+      const state = reorderUndoStack.pop();
+      quests = state.quests;
+      collapsedCategories = state.collapsed;
+      saveAllState();
+      renderApp();
+      showToast(`Undo reorder (${reorderUndoStack.length} left)`, "↩️");
+    }
+
+    /* Selected Quest Cards State (Ordered Array) */
+    let selectedQuestIds = [];
+
+    function toggleSelectQuest(id) {
+      const idx = selectedQuestIds.indexOf(id);
+      if (idx >= 0) {
+        selectedQuestIds.splice(idx, 1);
+      } else {
+        selectedQuestIds.push(id);
+      }
+      updateSelectedQuestsUI();
+    }
+
+    function updateSelectedQuestsUI() {
+      document.querySelectorAll(".quest-item").forEach(itemEl => {
+        const qid = parseInt(itemEl.id.replace("quest-item-", ""), 10);
+        const selIdx = selectedQuestIds.indexOf(qid);
+        const isSel = (selIdx >= 0);
+        itemEl.classList.toggle("selected-quest", isSel);
+
+        let badgeEl = itemEl.querySelector(".quest-select-order-badge");
+        if (isSel && selectedQuestIds.length > 1) {
+          if (!badgeEl) {
+            badgeEl = document.createElement("span");
+            badgeEl.className = "quest-select-order-badge";
+            const leftEl = itemEl.querySelector(".quest-left");
+            if (leftEl) {
+              const handle = leftEl.querySelector(".drag-handle");
+              if (handle) {
+                leftEl.insertBefore(badgeEl, handle.nextSibling);
+              } else {
+                leftEl.insertBefore(badgeEl, leftEl.firstChild);
+              }
+            }
+          }
+          badgeEl.textContent = `#${selIdx + 1}`;
+        } else if (badgeEl) {
+          badgeEl.remove();
+        }
+      });
+    }
+
+    function clearQuestSelection() {
+      if (selectedQuestIds.length > 0) {
+        selectedQuestIds = [];
+        document.querySelectorAll(".quest-item.selected-quest").forEach(el => el.classList.remove("selected-quest"));
+        document.querySelectorAll(".quest-select-order-badge").forEach(el => el.remove());
+      }
+    }
+
     /* Tags & Filter State */
     let presetTags = [];
     let selectedFilterTagIds = new Set();
@@ -5295,16 +5601,6 @@ complete: {
     let selectedNewTagColor = PRESET_TAG_COLORS[0];
     let selectedEditTagColor = null;
     let newQuestSelectedTags = new Set();
-    let dragState = {
-      isDragging: false,
-      questId: null,
-      sourceCat: null,
-      draggedEl: null,
-      placeholderEl: null,
-      offsetX: 0,
-      offsetY: 0,
-      width: 0
-    };
 
     function toggleTagFilterDropdown(e) {
       e.stopPropagation();
@@ -6688,7 +6984,7 @@ complete: {
           const savedSubQuests = localStorage.getItem(subQuestStorageKey);
 
           if (activePreset === "complete") {
-            subCats = JSON.parse(JSON.stringify(subConfig.defaultCategories || {}));
+            subCats = savedSubCats !== null ? JSON.parse(savedSubCats) : JSON.parse(JSON.stringify(subConfig.defaultCategories || {}));
             if (!subCats["none"]) {
               subCats["none"] = { title: "General", subtitle: `${subConfig.name} - General` };
             }
@@ -6787,7 +7083,7 @@ complete: {
       const savedCol = localStorage.getItem(colKey);
 
       if (activePreset === "complete") {
-        categories = JSON.parse(JSON.stringify(tabConfig.defaultCategories || {}));
+        categories = savedCats !== null ? JSON.parse(savedCats) : JSON.parse(JSON.stringify(tabConfig.defaultCategories || {}));
         if (!categories["none"]) {
           categories["none"] = { title: "General", subtitle: "General Quests" };
         }
@@ -7067,12 +7363,20 @@ complete: {
     function toggleCrossPresetSync(enabled) {
       isCrossPresetSyncEnabled = enabled;
       localStorage.setItem("wuwa_v2_cross_preset_sync", enabled ? "true" : "false");
+      const syncBtn = document.getElementById("btnSyncPresetToggle");
+      const syncText = document.getElementById("syncPresetToggleText");
+      if (syncBtn) syncBtn.classList.toggle("active", enabled);
+      if (syncText) syncText.textContent = enabled ? "On" : "Off";
       if (enabled) {
         syncAllCurrentPresetProgressToOther();
         showToast("Cross-preset progress sync enabled (1:1 identical matches)!", "⇄");
       } else {
         showToast("Cross-preset progress sync disabled.", "ℹ️");
       }
+    }
+
+    function togglePresetSyncCardClick(e) {
+      toggleCrossPresetSync(!isCrossPresetSyncEnabled);
     }
 
     function toggleQuest(id) {
@@ -7317,24 +7621,47 @@ complete: {
       if (sortDropdownPopover) sortDropdownPopover.classList.remove("open");
       document.querySelectorAll(".custom-select-wrapper").forEach(el => el.classList.remove("open"));
 
-      document.getElementById(id).classList.add("active");
+      const targetModal = typeof id === "string" ? document.getElementById(id) : id;
+      if (targetModal) {
+        targetModal.classList.add("active");
+      }
     }
 
-    function closeModal(id) {
-      document.getElementById(id).classList.remove("active");
+    function closeModal(id, e) {
+      if (e) {
+        if (typeof e.preventDefault === "function") e.preventDefault();
+        if (typeof e.stopPropagation === "function") e.stopPropagation();
+      }
+      const targetModal = typeof id === "string" ? document.getElementById(id) : id;
+      if (targetModal) {
+        targetModal.classList.remove("active");
+      }
     }
 
     function openEditCategoryModal(e, catKey) {
       if (e) e.stopPropagation();
-      if (catKey === "none") {
+      if (!catKey || catKey === "none" || catKey.endsWith("__none")) {
         showToast("General category cannot be edited.", "⚠️");
         return;
       }
       activeEditingCatKey = catKey;
       const cat = categories[catKey] || { title: "", subtitle: "" };
+      let cleanSubtitle = cat.subtitle || "";
+      if (currentTab === "all" && cat._tab) {
+        const tabName = PRESETS_SCHEMA[activePreset]?.tabs[cat._tab]?.name || "";
+        if (cleanSubtitle.startsWith(`${tabName} • `)) {
+          cleanSubtitle = cleanSubtitle.replace(`${tabName} • `, "");
+        } else if (cleanSubtitle === tabName) {
+          cleanSubtitle = "";
+        }
+      }
       document.getElementById("editCatTitle").value = cat.title || "";
-      document.getElementById("editCatSubtitle").value = cat.subtitle || "";
+      document.getElementById("editCatSubtitle").value = cleanSubtitle;
       openModal("editCategoryModal");
+    }
+
+    function saveCategoryEdit() {
+      saveEditCategoryModal();
     }
 
     function saveEditCategoryModal() {
@@ -7347,21 +7674,23 @@ complete: {
       const catInfo = categories[activeEditingCatKey];
       if (currentTab === "all" && catInfo && catInfo._tab) {
         const subCatKey = `wuwa_v2_${activePreset}_${catInfo._tab}_categories`;
+        const subConfig = PRESETS_SCHEMA[activePreset]?.tabs[catInfo._tab];
         try {
           const saved = localStorage.getItem(subCatKey);
-          let parsed = saved !== null ? JSON.parse(saved) : {};
+          let parsed = saved !== null ? JSON.parse(saved) : JSON.parse(JSON.stringify(subConfig?.defaultCategories || {}));
           parsed[catInfo._origCat] = { title, subtitle };
           localStorage.setItem(subCatKey, JSON.stringify(parsed));
         } catch(e) {}
-        catInfo.title = title;
-        catInfo.subtitle = subtitle ? `${PRESETS_SCHEMA[activePreset].tabs[catInfo._tab]?.name || ""} • ${subtitle}` : (PRESETS_SCHEMA[activePreset].tabs[catInfo._tab]?.name || "");
+        loadTabData("all");
       } else {
         categories[activeEditingCatKey] = { title, subtitle };
         saveAllState();
       }
 
+      activeEditingCatKey = null;
       closeModal("editCategoryModal");
       renderApp();
+      showToast(`Updated category "${title}"!`, "✓");
     }
 
     let catKeyToDelete = null;
@@ -7374,29 +7703,55 @@ complete: {
         showToast("General category cannot be deleted.", "⚠️");
         return;
       }
-      catKeyToDelete = catKey;
-      catTabToDelete = tabKey || (currentTab === "all" && categories[catKey]?._tab ? categories[catKey]._tab : currentTab);
+
+      let resolvedTab = tabKey;
+      let rawCatKey = catKey;
+      let compCatKey = catKey;
+
+      if (catKey.includes("__")) {
+        const parts = catKey.split("__");
+        resolvedTab = parts[0];
+        rawCatKey = parts.slice(1).join("__");
+        compCatKey = catKey;
+      } else {
+        resolvedTab = tabKey || manageCategoryModalActiveTab || currentTab || "main";
+        if (resolvedTab === "all") resolvedTab = "main";
+        compCatKey = `${resolvedTab}__${catKey}`;
+      }
+
+      if (rawCatKey === "none") {
+        showToast("General category cannot be deleted.", "⚠️");
+        return;
+      }
+
+      catKeyToDelete = rawCatKey;
+      catTabToDelete = resolvedTab;
 
       let catTitle = "Category";
       let count = 0;
 
-      if (currentTab === "all" && categories[catKey]) {
-        catTitle = categories[catKey].title;
-        count = quests.filter(q => q.cat === catKey).length;
-      } else if (catTabToDelete === currentTab && categories[catKey]) {
-        catTitle = categories[catKey].title;
-        count = quests.filter(q => q.cat === catKey).length;
+      if (categories[compCatKey]) {
+        catTitle = categories[compCatKey].title;
+      } else if (categories[rawCatKey]) {
+        catTitle = categories[rawCatKey].title;
       } else {
-        const catKeyName = `wuwa_v2_${activePreset}_${catTabToDelete}_categories`;
-        const questKeyName = `wuwa_v2_${activePreset}_${catTabToDelete}_quests`;
+        const catKeyName = `wuwa_v2_${activePreset}_${resolvedTab}_categories`;
         const savedCats = localStorage.getItem(catKeyName);
-        const savedQuests = localStorage.getItem(questKeyName);
-        const tabConfig = PRESETS_SCHEMA[activePreset]?.tabs[catTabToDelete];
+        const tabConfig = PRESETS_SCHEMA[activePreset]?.tabs[resolvedTab];
         const tabCats = savedCats !== null ? JSON.parse(savedCats) : JSON.parse(JSON.stringify(tabConfig?.defaultCategories || {}));
+        if (tabCats[rawCatKey]) catTitle = tabCats[rawCatKey].title;
+      }
+
+      if (currentTab === "all") {
+        count = quests.filter(q => q.cat === compCatKey || (q._tab === resolvedTab && (q._origCat === rawCatKey || q.cat === rawCatKey))).length;
+      } else if (currentTab === resolvedTab) {
+        count = quests.filter(q => q.cat === rawCatKey || q.cat === compCatKey).length;
+      } else {
+        const questKeyName = `wuwa_v2_${activePreset}_${resolvedTab}_quests`;
+        const savedQuests = localStorage.getItem(questKeyName);
+        const tabConfig = PRESETS_SCHEMA[activePreset]?.tabs[resolvedTab];
         const tabQuests = savedQuests !== null ? JSON.parse(savedQuests) : JSON.parse(JSON.stringify(tabConfig?.defaultQuests || []));
-        const cat = tabCats[catKey];
-        if (cat) catTitle = cat.title;
-        count = tabQuests.filter(q => q.cat === catKey).length;
+        count = tabQuests.filter(q => q.cat === rawCatKey).length;
       }
 
       document.getElementById("deleteCategoryConfirmText").innerHTML = `
@@ -7411,71 +7766,56 @@ complete: {
     }
 
     function confirmDeleteCategory() {
-      if (!catKeyToDelete || catKeyToDelete === "none") return;
-      const targetTab = catTabToDelete || currentTab;
+      if (!catKeyToDelete || catKeyToDelete === "none" || !catTabToDelete) return;
+      const targetTab = catTabToDelete;
+      const rawCatKey = catKeyToDelete;
+      const compCatKey = `${targetTab}__${rawCatKey}`;
       const alsoDeleteQuests = Boolean(document.getElementById("deleteCategoryQuestsCheckbox")?.checked);
+      
       let catTitle = "Category";
       let count = 0;
 
-      if (currentTab === "all" && categories[catKeyToDelete] && categories[catKeyToDelete]._tab) {
-        const catInfo = categories[catKeyToDelete];
-        catTitle = catInfo.title;
-        const subCatKey = `wuwa_v2_${activePreset}_${catInfo._tab}_categories`;
-        const subQuestKey = `wuwa_v2_${activePreset}_${catInfo._tab}_quests`;
-        try {
-          const savedCats = localStorage.getItem(subCatKey);
-          let parsedCats = savedCats !== null ? JSON.parse(savedCats) : {};
-          delete parsedCats[catInfo._origCat];
-          localStorage.setItem(subCatKey, JSON.stringify(parsedCats));
+      const catKeyName = `wuwa_v2_${activePreset}_${targetTab}_categories`;
+      const questKeyName = `wuwa_v2_${activePreset}_${targetTab}_quests`;
+      const savedCats = localStorage.getItem(catKeyName);
+      const savedQuests = localStorage.getItem(questKeyName);
+      const tabConfig = PRESETS_SCHEMA[activePreset]?.tabs[targetTab];
 
-          const savedQuests = localStorage.getItem(subQuestKey);
-          let parsedQuests = savedQuests !== null ? JSON.parse(savedQuests) : [];
-          count = parsedQuests.filter(q => q.cat === catInfo._origCat).length;
-          if (alsoDeleteQuests) {
-            parsedQuests = parsedQuests.filter(q => q.cat !== catInfo._origCat);
-          } else {
-            parsedQuests = parsedQuests.map(q => q.cat === catInfo._origCat ? { ...q, cat: "none" } : q);
-          }
-          localStorage.setItem(subQuestKey, JSON.stringify(parsedQuests));
-        } catch(e) {}
-        loadTabData("all");
-      } else if (targetTab === currentTab) {
-        const catInfo = categories[catKeyToDelete];
-        if (catInfo) catTitle = catInfo.title;
-        count = quests.filter(q => q.cat === catKeyToDelete).length;
-        if (alsoDeleteQuests) {
-          quests = quests.filter(q => q.cat !== catKeyToDelete);
-        } else {
-          quests = quests.map(q => q.cat === catKeyToDelete ? { ...q, cat: "none" } : q);
-        }
-        delete categories[catKeyToDelete];
-        delete collapsedCategories[catKeyToDelete];
-        if (selectedCategory === catKeyToDelete) selectedCategory = "none";
-        saveAllState();
+      let tabCats = savedCats !== null ? JSON.parse(savedCats) : JSON.parse(JSON.stringify(tabConfig?.defaultCategories || {}));
+      let tabQuests = savedQuests !== null ? JSON.parse(savedQuests) : JSON.parse(JSON.stringify(tabConfig?.defaultQuests || []));
+
+      if (tabCats[rawCatKey]) {
+        catTitle = tabCats[rawCatKey].title;
+      } else if (categories[compCatKey]) {
+        catTitle = categories[compCatKey].title;
+      } else if (categories[rawCatKey]) {
+        catTitle = categories[rawCatKey].title;
+      }
+
+      count = tabQuests.filter(q => q.cat === rawCatKey).length;
+
+      if (alsoDeleteQuests) {
+        tabQuests = tabQuests.filter(q => q.cat !== rawCatKey);
       } else {
-        const catKeyName = `wuwa_v2_${activePreset}_${targetTab}_categories`;
-        const questKeyName = `wuwa_v2_${activePreset}_${targetTab}_quests`;
-        const savedCats = localStorage.getItem(catKeyName);
-        const savedQuests = localStorage.getItem(questKeyName);
-        const tabConfig = PRESETS_SCHEMA[activePreset]?.tabs[targetTab];
-        let tabCats = savedCats !== null ? JSON.parse(savedCats) : JSON.parse(JSON.stringify(tabConfig?.defaultCategories || {}));
-        let tabQuests = savedQuests !== null ? JSON.parse(savedQuests) : JSON.parse(JSON.stringify(tabConfig?.defaultQuests || []));
-        
-        if (tabCats[catKeyToDelete]) catTitle = tabCats[catKeyToDelete].title;
-        count = tabQuests.filter(q => q.cat === catKeyToDelete).length;
-        if (alsoDeleteQuests) {
-          tabQuests = tabQuests.filter(q => q.cat !== catKeyToDelete);
-        } else {
-          tabQuests = tabQuests.map(q => q.cat === catKeyToDelete ? { ...q, cat: "none" } : q);
-        }
-        delete tabCats[catKeyToDelete];
-        localStorage.setItem(catKeyName, JSON.stringify(tabCats));
-        localStorage.setItem(questKeyName, JSON.stringify(tabQuests));
+        tabQuests = tabQuests.map(q => q.cat === rawCatKey ? { ...q, cat: "none" } : q);
+      }
+      delete tabCats[rawCatKey];
 
-        if (currentTab === "all") {
-          loadTabData("all");
-          saveAllState();
+      localStorage.setItem(catKeyName, JSON.stringify(tabCats));
+      localStorage.setItem(questKeyName, JSON.stringify(tabQuests));
+
+      if (currentTab === "all") {
+        loadTabData("all");
+        saveAllState();
+      } else if (currentTab === targetTab) {
+        categories = tabCats;
+        quests = tabQuests;
+        delete collapsedCategories[rawCatKey];
+        delete collapsedCategories[compCatKey];
+        if (selectedCategory === rawCatKey || selectedCategory === compCatKey) {
+          selectedCategory = "none";
         }
+        saveAllState();
       }
 
       catKeyToDelete = null;
@@ -7824,6 +8164,13 @@ complete: {
 
     function openDeleteQuestModal(e, id) {
       e.stopPropagation();
+
+      // Multi-select delete: if this quest is part of a multi-selection, trigger multi-delete
+      if (selectedQuestIds.length > 1 && selectedQuestIds.includes(id)) {
+        openDeleteMultiQuestModal();
+        return;
+      }
+
       if (skipDeleteQuestConfirm) {
         const q = quests.find(item => item.id === id);
         if (currentTab === "all" && q && q._tab) {
@@ -7850,6 +8197,73 @@ complete: {
       const dontAskEl = document.getElementById("dontAskDeleteQuest");
       if (dontAskEl) dontAskEl.checked = false;
       openModal("deleteQuestModal");
+    }
+
+    function openDeleteMultiQuestModal() {
+      const count = selectedQuestIds.length;
+      document.getElementById("deleteMultiConfirmText").innerHTML = `You are about to remove <strong>${count} selected quests</strong>. This cannot be undone.`;
+      openModal("deleteMultiQuestModal");
+    }
+
+    function openReviewMultiDeleteModal() {
+      const list = document.getElementById("reviewMultiDeleteList");
+      list.innerHTML = "";
+      selectedQuestIds.forEach(id => {
+        const q = quests.find(item => item.id === id);
+        if (!q) return;
+        const row = document.createElement("div");
+        row.className = "review-multi-delete-item";
+        row.innerHTML = `<span>${q.name}</span><span class="deselect-hint">✕ Deselect</span>`;
+        row.onclick = () => {
+          toggleSelectQuest(id);
+          if (selectedQuestIds.length === 0) {
+            closeModal("reviewMultiDeleteModal");
+            closeModal("deleteMultiQuestModal");
+            return;
+          }
+          // Update count in the parent modal
+          document.getElementById("deleteMultiConfirmText").innerHTML = `You are about to remove <strong>${selectedQuestIds.length} selected quests</strong>. This cannot be undone.`;
+          // Re-render review list
+          openReviewMultiDeleteModal();
+        };
+        list.appendChild(row);
+      });
+      openModal("reviewMultiDeleteModal");
+    }
+
+    function confirmDeleteMultiQuests() {
+      const idsToDelete = new Set([...selectedQuestIds]);
+      const deletedQuests = quests.filter(q => idsToDelete.has(q.id));
+
+      if (currentTab === "all") {
+        const tabMap = {};
+        deletedQuests.forEach(q => {
+          if (q._tab) {
+            if (!tabMap[q._tab]) tabMap[q._tab] = new Set();
+            tabMap[q._tab].add(q.id);
+          }
+        });
+        Object.entries(tabMap).forEach(([tKey, idSet]) => {
+          const subQuestKey = `wuwa_v2_${activePreset}_${tKey}_quests`;
+          try {
+            const saved = localStorage.getItem(subQuestKey);
+            if (saved !== null) {
+              let parsed = JSON.parse(saved);
+              parsed = parsed.filter(pq => !idSet.has(pq.id));
+              localStorage.setItem(subQuestKey, JSON.stringify(parsed));
+            }
+          } catch(e) {}
+        });
+      }
+
+      quests = quests.filter(item => !idsToDelete.has(item.id));
+      const count = idsToDelete.size;
+      clearQuestSelection();
+      closeModal("reviewMultiDeleteModal");
+      closeModal("deleteMultiQuestModal");
+      saveAllState();
+      renderApp();
+      showToast(`Removed ${count} quests`, "🗑️");
     }
 
     function confirmDeleteQuest() {
@@ -7880,6 +8294,21 @@ complete: {
       if (q) showToast(`Removed "${q.name}"`, "🗑️");
     }
 
+    let cancelCurrentDrag = null;
+
+    let dragState = {
+      isDragging: false,
+      questId: null,
+      sourceCat: null,
+      draggedEl: null,
+      placeholderEl: null,
+      isMulti: false,
+      selectedIds: [],
+      offsetX: 0,
+      offsetY: 0,
+      width: 0
+    };
+
     function initDrag(e, q, itemEl) {
       if (e.button !== 0 || searchQuery || selectedFilterTagIds.size > 0 || catDragState.isDragging) return;
       e.preventDefault();
@@ -7888,26 +8317,83 @@ complete: {
       const scrollContainer = document.getElementById("questContainer");
       const rect = itemEl.getBoundingClientRect();
 
-      const placeholder = document.createElement("div");
-      placeholder.className = "quest-item-placeholder";
-      itemEl.parentNode.insertBefore(placeholder, itemEl);
+      const isMulti = selectedQuestIds.includes(q.id) && selectedQuestIds.length > 1;
+      const selectedIds = isMulti ? [...selectedQuestIds] : [q.id];
+
+      // Create multi-placeholder container with as many slots as selected quests
+      const placeholderWrap = document.createElement("div");
+      placeholderWrap.className = "quest-multi-placeholder-wrap";
+      for (let i = 0; i < selectedIds.length; i++) {
+        const ph = document.createElement("div");
+        ph.className = "quest-item-placeholder";
+        placeholderWrap.appendChild(ph);
+      }
+      itemEl.parentNode.insertBefore(placeholderWrap, itemEl);
 
       dragState.isDragging = true;
       dragState.questId = q.id;
       dragState.sourceCat = q.cat;
       dragState.draggedEl = itemEl;
-      dragState.placeholderEl = placeholder;
+      dragState.placeholderEl = placeholderWrap;
+      dragState.isMulti = isMulti;
+      dragState.selectedIds = selectedIds;
       dragState.offsetX = e.clientX - rect.left;
       dragState.offsetY = e.clientY - rect.top;
       dragState.width = rect.width;
 
-      document.body.classList.add("is-dragging-active", "is-quest-dragging");
+      // Create drag container wrapper to guarantee strict z-index layering
+      const dragWrapper = document.createElement("div");
+      dragWrapper.className = "quest-drag-container";
+      dragWrapper.style.setProperty("--drag-w", `${rect.width}px`);
+      dragWrapper.style.setProperty("--drag-x", `${rect.left}px`);
+      dragWrapper.style.setProperty("--drag-y", `${rect.top}px`);
+
+      if (isMulti) {
+        document.body.classList.add("is-dragging-active", "is-quest-dragging");
+
+        // Highlight source category card
+        document.querySelectorAll(`.category-card[data-category-key="${q.cat}"]`).forEach(c => {
+          c.classList.add("is-source-cat-zone");
+        });
+
+        // Add shadow outline layers strictly underneath the card
+        const shadowCount = Math.min(selectedIds.length - 1, 2);
+        if (shadowCount >= 2) {
+          const shadow2 = document.createElement("div");
+          shadow2.className = "drag-shadow-layer shadow-2";
+          dragWrapper.appendChild(shadow2);
+        }
+        if (shadowCount >= 1) {
+          const shadow1 = document.createElement("div");
+          shadow1.className = "drag-shadow-layer shadow-1";
+          dragWrapper.appendChild(shadow1);
+        }
+
+        // Add count badge
+        const countBadge = document.createElement("div");
+        countBadge.className = "multi-drag-count-badge";
+        countBadge.textContent = selectedIds.length;
+        dragWrapper.appendChild(countBadge);
+      } else {
+        document.body.classList.add("is-dragging-active", "is-quest-dragging");
+      }
 
       itemEl.classList.add("is-pointer-dragging");
-      itemEl.style.setProperty("--drag-w", `${rect.width}px`);
-      itemEl.style.setProperty("--drag-x", `${rect.left}px`);
-      itemEl.style.setProperty("--drag-y", `${rect.top}px`);
-      document.body.appendChild(itemEl);
+      dragWrapper.appendChild(itemEl);
+      document.body.appendChild(dragWrapper);
+      dragState.draggedEl = dragWrapper;
+
+      // Visually hide all other selected quest cards from the category list while dragging
+      if (isMulti) {
+        selectedIds.forEach(id => {
+          const el = document.getElementById(`quest-item-${id}`);
+          if (el && el !== itemEl) {
+            el.style.display = "none";
+          }
+        });
+      }
+
+      let hoveredTargetCatKey = null;
 
       function onPointerMove(moveEvent) {
         if (!dragState.isDragging || !dragState.draggedEl) return;
@@ -7925,84 +8411,189 @@ complete: {
         }
 
         const elemBelow = document.elementFromPoint(moveEvent.clientX, moveEvent.clientY);
-        if (!elemBelow) return;
-
-        const targetCatCard = elemBelow.closest(".category-card");
+        const targetCatCard = elemBelow ? elemBelow.closest(".category-card") : null;
+        
         document.querySelectorAll(".category-card").forEach(c => c.classList.remove("drag-target-zone"));
 
         if (targetCatCard) {
           targetCatCard.classList.add("drag-target-zone");
+          hoveredTargetCatKey = targetCatCard.getAttribute("data-category-key");
+          
           const targetList = targetCatCard.querySelector(".quest-list");
-
-          if (targetList) {
+          if (targetList && !targetCatCard.classList.contains("collapsed")) {
             const children = Array.from(targetList.querySelectorAll(".quest-item:not(.is-pointer-dragging)"));
             let inserted = false;
-
             for (const child of children) {
               const box = child.getBoundingClientRect();
               if (moveEvent.clientY < box.top + box.height / 2) {
-                targetList.insertBefore(placeholder, child);
+                targetList.insertBefore(placeholderWrap, child);
                 inserted = true;
                 break;
               }
             }
-
             if (!inserted) {
-              targetList.appendChild(placeholder);
+              targetList.appendChild(placeholderWrap);
             }
           }
+        } else {
+          hoveredTargetCatKey = null;
         }
       }
 
-      function onPointerUp() {
+      function onPointerUp(upEvent) {
         window.removeEventListener("pointermove", onPointerMove);
         window.removeEventListener("pointerup", onPointerUp);
+        cancelCurrentDrag = null;
 
         if (!dragState.isDragging) return;
 
         document.body.classList.remove("is-dragging-active", "is-quest-dragging");
-        document.querySelectorAll(".category-card").forEach(c => c.classList.remove("drag-target-zone"));
+        
+        // 1. First prioritize active hover zone on category cards
+        let targetCatKey = hoveredTargetCatKey;
+        const activeCard = document.querySelector(".category-card.drag-target-zone");
+        if (!targetCatKey && activeCard) {
+          targetCatKey = activeCard.getAttribute("data-category-key");
+        }
 
-        const targetList = placeholder.parentNode;
+        // Fallback: check element below pointer
+        if (!targetCatKey) {
+          const clientX = upEvent ? upEvent.clientX : e.clientX;
+          const clientY = upEvent ? upEvent.clientY : e.clientY;
+          const elemBelow = document.elementFromPoint(clientX, clientY);
+          const catCard = elemBelow ? elemBelow.closest(".category-card") : null;
+          if (catCard) {
+            targetCatKey = catCard.getAttribute("data-category-key");
+          }
+        }
+
+        // 2. Check if placeholder was inserted into an expanded list belonging to the target category
+        const targetList = placeholderWrap.parentNode;
+        let targetIndexInList = -1;
         if (targetList && targetList.classList.contains("quest-list")) {
-          const newCatKey = targetList.getAttribute("data-category-key");
-          const targetIndexInList = Array.from(targetList.children).indexOf(placeholder);
-          const movingQuestIndex = quests.findIndex(item => item.id === q.id);
-          if (movingQuestIndex > -1) {
-            const [movingQuest] = quests.splice(movingQuestIndex, 1);
-            movingQuest.cat = newCatKey;
+          const listCatKey = targetList.getAttribute("data-category-key");
+          if (!targetCatKey) {
+            targetCatKey = listCatKey;
+          }
+          if (listCatKey === targetCatKey) {
+            targetIndexInList = Array.from(targetList.children).indexOf(placeholderWrap);
+          }
+        }
 
+        if (!targetCatKey) {
+          targetCatKey = q.cat;
+        }
+
+        document.querySelectorAll(".category-card").forEach(c => c.classList.remove("drag-target-zone", "is-source-cat-zone"));
+
+        if (targetCatKey) {
+          pushReorderUndo();
+          const movingIdsSet = new Set(selectedIds);
+          // Grab the quests in exact selection order
+          const movingQuests = selectedIds.map(id => quests.find(item => item.id === id)).filter(Boolean);
+
+          // Remove them from current global quests array
+          quests = quests.filter(item => !movingIdsSet.has(item.id));
+
+          // Update their category & tab info
+          if (currentTab === "all" && targetCatKey.includes("__")) {
+            const targetSubTab = targetCatKey.split("__")[0];
+            const targetOrigCat = targetCatKey.split("__").slice(1).join("__");
+            movingQuests.forEach(mq => {
+              mq.cat = targetCatKey;
+              mq._tab = targetSubTab;
+              mq._origCat = targetOrigCat;
+            });
+          } else {
+            movingQuests.forEach(mq => {
+              mq.cat = targetCatKey;
+            });
+          }
+
+          // Insert at target index in list or append to category
+          if (targetList && targetList.classList.contains("quest-list") && targetIndexInList > -1) {
             const siblingItems = Array.from(targetList.querySelectorAll(".quest-item:not(.is-pointer-dragging)"));
             if (siblingItems.length === 0) {
-              quests.push(movingQuest);
+              quests.push(...movingQuests);
             } else {
               const refEl = siblingItems[targetIndexInList];
               if (refEl) {
                 const refId = parseInt(refEl.id.replace("quest-item-", ""), 10);
                 const refIndexInGlobal = quests.findIndex(item => item.id === refId);
                 if (refIndexInGlobal > -1) {
-                  quests.splice(refIndexInGlobal, 0, movingQuest);
+                  quests.splice(refIndexInGlobal, 0, ...movingQuests);
                 } else {
-                  quests.push(movingQuest);
+                  quests.push(...movingQuests);
                 }
               } else {
                 const lastEl = siblingItems[siblingItems.length - 1];
                 const lastId = parseInt(lastEl.id.replace("quest-item-", ""), 10);
                 const lastIndex = quests.findIndex(item => item.id === lastId);
                 if (lastIndex > -1) {
-                  quests.splice(lastIndex + 1, 0, movingQuest);
+                  quests.splice(lastIndex + 1, 0, ...movingQuests);
                 } else {
-                  quests.push(movingQuest);
+                  quests.push(...movingQuests);
                 }
               }
             }
+          } else {
+            // Dropped onto a category card or header (insert after any existing items in that category, or at end)
+            const catExistingQuests = quests.filter(item => targetCatKey === "none" ? (!item.cat || item.cat === "none" || !categories[item.cat]) : item.cat === targetCatKey);
+            if (catExistingQuests.length > 0) {
+              const lastInCat = catExistingQuests[catExistingQuests.length - 1];
+              const lastGlobalIdx = quests.findIndex(item => item.id === lastInCat.id);
+              if (lastGlobalIdx > -1) {
+                quests.splice(lastGlobalIdx + 1, 0, ...movingQuests);
+              } else {
+                quests.push(...movingQuests);
+              }
+            } else {
+              quests.push(...movingQuests);
+            }
+          }
+
+          // Update sub-tab localStorage if in All tab
+          if (currentTab === "all") {
+            const subTabsToUpdate = new Set(["main", "tutorial", "companion", "event", "exploration", "side", "daily"]);
+            subTabsToUpdate.forEach(subKey => {
+              const subQuestKey = `wuwa_v2_${activePreset}_${subKey}_quests`;
+              try {
+                const subQuests = quests.filter(q => q._tab === subKey).map(q => {
+                  const copy = { ...q };
+                  delete copy._tab;
+                  if (copy._origCat !== undefined) {
+                    copy.cat = copy._origCat;
+                    delete copy._origCat;
+                  }
+                  return copy;
+                });
+                localStorage.setItem(subQuestKey, JSON.stringify(subQuests));
+              } catch(e) {}
+            });
+          }
+
+          // Auto-collapse empty categories & expand target category
+          Object.keys(categories).forEach(cKey => {
+            const count = quests.filter(item => cKey === "none" ? (!item.cat || item.cat === "none" || !categories[item.cat]) : item.cat === cKey).length;
+            if (count === 0) {
+              collapsedCategories[cKey] = true;
+            }
+          });
+          collapsedCategories[targetCatKey] = false;
+
+          if (isMulti) {
+            clearQuestSelection();
+            const catTitle = categories[targetCatKey]?.title || "Category";
+            showToast(`Moved ${movingQuests.length} quests to "${catTitle}"!`, "📁");
           }
         }
 
-        if (placeholder.parentNode) {
-          placeholder.parentNode.removeChild(placeholder);
+        if (placeholderWrap.parentNode) {
+          placeholderWrap.parentNode.removeChild(placeholderWrap);
         }
-        if (itemEl.parentNode) {
+        if (dragWrapper.parentNode) {
+          dragWrapper.parentNode.removeChild(dragWrapper);
+        } else if (itemEl.parentNode) {
           itemEl.parentNode.removeChild(itemEl);
         }
 
@@ -8016,6 +8607,28 @@ complete: {
         renderApp();
         scrollContainer.scrollTop = currentScroll;
       }
+
+      cancelCurrentDrag = () => {
+        window.removeEventListener("pointermove", onPointerMove);
+        window.removeEventListener("pointerup", onPointerUp);
+        cancelCurrentDrag = null;
+
+        document.body.classList.remove("is-dragging-active", "is-quest-dragging");
+        document.querySelectorAll(".category-card").forEach(c => c.classList.remove("drag-target-zone", "is-source-cat-zone"));
+
+        if (placeholderWrap.parentNode) placeholderWrap.parentNode.removeChild(placeholderWrap);
+        if (dragWrapper.parentNode) dragWrapper.parentNode.removeChild(dragWrapper);
+        else if (itemEl.parentNode) itemEl.parentNode.removeChild(itemEl);
+
+        dragState.isDragging = false;
+        dragState.questId = null;
+        dragState.draggedEl = null;
+        dragState.placeholderEl = null;
+
+        const currentScroll = scrollContainer.scrollTop;
+        renderApp();
+        scrollContainer.scrollTop = currentScroll;
+      };
 
       window.addEventListener("pointermove", onPointerMove);
       window.addEventListener("pointerup", onPointerUp);
@@ -8092,6 +8705,7 @@ complete: {
       function onCatPointerUp() {
         window.removeEventListener("pointermove", onCatPointerMove);
         window.removeEventListener("pointerup", onCatPointerUp);
+        cancelCurrentDrag = null;
 
         if (!catDragState.isDragging) return;
 
@@ -8101,6 +8715,7 @@ complete: {
         const newOrderedKeys = currentCardsInDOM.map(el => el.getAttribute("data-category-key")).filter(Boolean);
 
         if (newOrderedKeys.length > 0) {
+          pushReorderUndo();
           const reorderedCategories = {};
           newOrderedKeys.forEach(k => {
             if (categories[k]) {
@@ -8132,6 +8747,25 @@ complete: {
         renderApp();
         scrollContainer.scrollTop = currentScroll;
       }
+
+      cancelCurrentDrag = () => {
+        window.removeEventListener("pointermove", onCatPointerMove);
+        window.removeEventListener("pointerup", onCatPointerUp);
+        cancelCurrentDrag = null;
+
+        document.body.classList.remove("is-dragging-active", "is-cat-dragging");
+        if (placeholder.parentNode) placeholder.parentNode.removeChild(placeholder);
+        if (cardEl.parentNode) cardEl.parentNode.removeChild(cardEl);
+
+        catDragState.isDragging = false;
+        catDragState.catKey = null;
+        catDragState.draggedEl = null;
+        catDragState.placeholderEl = null;
+
+        const currentScroll = scrollContainer.scrollTop;
+        renderApp();
+        scrollContainer.scrollTop = currentScroll;
+      };
 
       window.addEventListener("pointermove", onCatPointerMove);
       window.addEventListener("pointerup", onCatPointerUp);
@@ -8323,10 +8957,12 @@ complete: {
             id: Date.now() + Math.floor(Math.random() * 1000) + addedCount,
             cat: origCatKey === "none" ? "none" : origCatKey,
             name: q.name,
-            done: false,
+            done: true,
             tags: [...(q.tags || [])]
           });
           addedCount++;
+        } else {
+          personalQuests = personalQuests.map(pq => pq.name.trim().toLowerCase() === q.name.trim().toLowerCase() ? { ...pq, done: true } : pq);
         }
       });
 
@@ -8341,6 +8977,44 @@ complete: {
       });
       ensureTagsInPersonal(allCategoryTagIds);
 
+      // Auto-check all quests in current category
+      const targetIds = new Set(catQuests.map(q => q.id));
+      quests = quests.map(q => {
+        if (targetIds.has(q.id)) {
+          return { ...q, done: true };
+        }
+        return q;
+      });
+
+      if (currentTab === "all") {
+        const tabMap = {};
+        catQuests.forEach(q => {
+          if (q._tab) {
+            if (!tabMap[q._tab]) tabMap[q._tab] = new Set();
+            tabMap[q._tab].add(q.id);
+          }
+        });
+        Object.entries(tabMap).forEach(([tKey, idSet]) => {
+          const subQuestKey = `wuwa_v2_${activePreset}_${tKey}_quests`;
+          try {
+            const saved = localStorage.getItem(subQuestKey);
+            if (saved !== null) {
+              let parsed = JSON.parse(saved);
+              parsed = parsed.map(pq => idSet.has(pq.id) ? { ...pq, done: true } : pq);
+              localStorage.setItem(subQuestKey, JSON.stringify(parsed));
+            }
+          } catch(e) {}
+        });
+      }
+
+      if (isCrossPresetSyncEnabled) {
+        catQuests.forEach(tq => {
+          if (tq && tq.name) syncQuestDoneToOtherPreset(tq, true);
+        });
+      }
+
+      saveAllState();
+
       if (buttonEl) {
         buttonEl.classList.add("in-personal");
         buttonEl.innerHTML = `<span class="icon">✓</span><span>Added! (${addedCount})</span>`;
@@ -8352,9 +9026,9 @@ complete: {
       const catTitle = origCatKey === "none" ? "General" : (catInfo?.title || "Category");
       const tabName = PRESETS_SCHEMA[activePreset]?.tabs[tabKey]?.name || "Personal";
       if (addedCount > 0) {
-        showToast(`Added "${catTitle}" and ${addedCount} quest(s) to Personal (${tabName})!`, "✨");
+        showToast(`Added "${catTitle}" to Personal (${tabName}) and checked all quests!`, "✨");
       } else {
-        showToast(`"${catTitle}" quests are already in Personal!`, "ℹ️");
+        showToast(`"${catTitle}" quests are in Personal and checked!`, "ℹ️");
       }
 
       renderApp();
@@ -8465,7 +9139,17 @@ complete: {
     function createQuestElement(q, indexNumber, isSearching) {
       const item = document.createElement("div");
       item.id = `quest-item-${q.id}`;
-      item.className = `quest-item ${q.done ? "completed" : ""}`;
+      const selIdx = selectedQuestIds.indexOf(q.id);
+      const isSelected = (selIdx >= 0);
+      const orderBadgeHtml = (isSelected && selectedQuestIds.length > 1) ? `<span class="quest-select-order-badge">#${selIdx + 1}</span>` : "";
+      item.className = `quest-item ${q.done ? "completed" : ""} ${isSelected ? "selected-quest" : ""}`;
+
+      // Right-click to select / deselect quest card
+      item.addEventListener("contextmenu", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        toggleSelectQuest(q.id);
+      });
 
       let isAlreadyInPersonal = false;
       if (activePreset === "complete") {
@@ -8487,13 +9171,14 @@ complete: {
               <svg viewBox="0 0 24 24"><path d="M9 5a2 2 0 100-4 2 2 0 000 4zm0 8a2 2 0 100-4 2 2 0 000 4zm0 8a2 2 0 100-4 2 2 0 000 4zm6-16a2 2 0 100-4 2 2 0 000 4zm0 8a2 2 0 100-4 2 2 0 000 4zm0 8a2 2 0 100-4 2 2 0 000 4z"/></svg>
             </div>
           ` : ""}
+          ${orderBadgeHtml}
           <span class="quest-index">#${indexNumber}</span>
           <div class="radio-icon"></div>
           <div class="quest-title-and-tags">
             <div class="quest-title-row">
               <span class="quest-title">${q.name}</span>
               ${(q.astrites && q.astrites > 0) ? `
-                <span class="quest-astrite-badge" title="Awards ${q.astrites} Astrites"><svg viewBox="0 0 24 24" width="11" height="11" fill="currentColor" style="display:inline-block; vertical-align:-1px; margin-right:2px;"><path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z"/></svg>${q.astrites}</span>
+                <span class="quest-astrite-badge"><svg viewBox="0 0 24 24" width="11" height="11" fill="currentColor" style="display:inline-block; vertical-align:-1px; margin-right:2px;"><path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z"/></svg>${q.astrites}</span>
               ` : ""}
             </div>
             ${qTags.length > 0 ? `
@@ -8510,7 +9195,7 @@ complete: {
           </div>
         </div>
         <div class="quest-actions">
-          <button type="button" class="btn-quest-action btn-quest-info" title="Quest Details & Requirements">
+          <button type="button" class="btn-quest-action btn-quest-info">
             <svg viewBox="0 0 24 24" width="13" height="13"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
             <span>Info</span>
           </button>
@@ -9047,8 +9732,34 @@ complete: {
     });
 
     window.addEventListener("keydown", (e) => {
+      // Ctrl+Z to undo reorders
+      if ((e.ctrlKey || e.metaKey) && e.key === "z" && !e.shiftKey) {
+        if (["INPUT", "TEXTAREA"].includes(document.activeElement.tagName) || document.activeElement.isContentEditable) return;
+        if (reorderUndoStack.length > 0) {
+          e.preventDefault();
+          undoReorder();
+          return;
+        }
+      }
+
       if (e.key === "Escape") {
-        // 1. Close open dropdowns first
+        // 1. Cancel active drag operation if in progress
+        if (dragState.isDragging || catDragState.isDragging) {
+          e.preventDefault();
+          e.stopPropagation();
+          if (typeof cancelCurrentDrag === "function") {
+            cancelCurrentDrag();
+          }
+          return;
+        }
+
+        // 2. Clear quest card selections if any
+        if (selectedQuestIds.length > 0) {
+          clearQuestSelection();
+          return;
+        }
+
+        // 3. Close open dropdowns first
         const openCustomSelect = document.querySelector(".custom-select-wrapper.open");
         const tagFilterDropdown = document.getElementById("tagFilterDropdown");
         const sortDropdownPopover = document.getElementById("sortDropdownPopover");
@@ -9067,7 +9778,7 @@ complete: {
           return;
         }
 
-        // 2. Close ONLY the top-most (highest z-index) active modal
+        // 4. Close ONLY the top-most (highest z-index) active modal
         const topmostModal = getTopmostActiveModal();
         if (topmostModal) {
           topmostModal.classList.remove("active");
@@ -9507,8 +10218,11 @@ complete: {
         multiSortToggleText.textContent = isMulti ? "On" : "Off";
       }
 
+      // Hide direction section when multi-sort is on OR when sort mode is natural (manual order)
+      const curSortMode = isCatTab ? categorySortMode : questSortMode;
+      const hideDirection = isMulti || curSortMode === "natural";
       if (sortSingleDirectionSection) {
-        sortSingleDirectionSection.style.display = isMulti ? "none" : "flex";
+        sortSingleDirectionSection.style.display = hideDirection ? "none" : "flex";
       }
 
       const curDir = isCatTab ? categorySortDir : questSortDir;
@@ -9899,6 +10613,9 @@ complete: {
         });
 
         const isCatEmpty = (catQuests.length === 0);
+        if (isCatEmpty) {
+          collapsedCategories[catKey] = true;
+        }
 
         // Keep natural original category index permanently on each quest
         const indexedQuests = catQuests.map((q, idx) => ({ ...q, categoryIndex: idx + 1 }));
@@ -9966,7 +10683,7 @@ complete: {
 
         totalMatchesRendered += displayQuests.length;
         
-        const isCollapsed = isFiltering ? !!filterCollapsedCategories[catKey] : !!collapsedCategories[catKey];
+        const isCollapsed = isCatEmpty || (isFiltering ? !!filterCollapsedCategories[catKey] : !!collapsedCategories[catKey]);
 
         let isCatAlreadyInPersonal = false;
         if (activePreset === "complete") {
@@ -10055,6 +10772,55 @@ complete: {
         container.appendChild(emptyState);
       }
     }
+
+      // Initialize per-modal backdrop and click isolation
+      document.querySelectorAll(".modal-overlay").forEach(overlay => {
+        overlay.addEventListener("click", (e) => {
+          if (e.target === overlay) {
+            e.preventDefault();
+            e.stopPropagation();
+            closeModal(overlay.id);
+          }
+        });
+        const box = overlay.querySelector(".modal-box");
+        if (box) {
+          box.addEventListener("click", (e) => {
+            e.stopPropagation();
+          });
+        }
+      });
+
+      // Global click handler to close open popovers only
+      document.addEventListener("click", (e) => {
+        const tagDropdown = document.getElementById("tagFilterDropdown");
+        const tagBtn = document.getElementById("tagFilterBtn");
+        if (tagDropdown && tagDropdown.classList.contains("open")) {
+          if (!tagDropdown.contains(e.target) && !tagBtn?.contains(e.target)) {
+            tagDropdown.classList.remove("open");
+          }
+        }
+
+        const sortPopover = document.getElementById("sortDropdownPopover");
+        const sortBtn = document.getElementById("sortOrderBtn");
+        if (sortPopover && sortPopover.classList.contains("open")) {
+          if (!sortPopover.contains(e.target) && !sortBtn?.contains(e.target)) {
+            sortPopover.classList.remove("open");
+          }
+        }
+
+        document.querySelectorAll(".custom-select-wrapper.open").forEach(sel => {
+          if (!sel.contains(e.target)) {
+            sel.classList.remove("open");
+          }
+        });
+      });
+
+      // Deselect quest cards when clicking outside quest cards and not on interactive buttons/controls
+      document.addEventListener("click", (e) => {
+        if (!e.target.closest(".quest-item") && !e.target.closest("button") && !e.target.closest("input") && !e.target.closest("select") && !e.target.closest("textarea") && !e.target.closest(".modal-overlay") && !e.target.closest(".custom-select-wrapper") && !e.target.closest("#tagFilterDropdown") && !e.target.closest("#sortDropdownPopover")) {
+          clearQuestSelection();
+        }
+      });
 
       document.addEventListener("keydown", (e) => {
         if (e.key === "/" && !["INPUT", "TEXTAREA"].includes(document.activeElement.tagName) && !document.activeElement.isContentEditable) {
