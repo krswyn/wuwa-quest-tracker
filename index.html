@@ -3309,7 +3309,7 @@
     }
   </style>
 </head>
-<body data-tab="main">
+<body data-tab="all">
 
   <div class="app-layout">
     <!-- Left Sidebar -->
@@ -3317,13 +3317,28 @@
       
       <!-- Preset Switcher -->
       <div class="preset-panel">
-        <button class="preset-btn" id="btnPresetComplete" onclick="switchPreset('complete')">
+        <button class="preset-btn active" id="btnPresetComplete" onclick="switchPreset('complete')">
           <span>Explorer</span>
         </button>
-        <button class="preset-btn active" id="btnPresetPersonal" onclick="switchPreset('personal')">
+        <button class="preset-btn" id="btnPresetPersonal" onclick="switchPreset('personal')">
           <span>Personal</span>
         </button>
       </div>
+      <script>
+        (function() {
+          try {
+            var p = localStorage.getItem("wuwa_v2_active_preset") || "complete";
+            var t = localStorage.getItem("wuwa_v2_active_tab_" + p) || (p === "complete" ? "all" : "main");
+            document.body.setAttribute("data-tab", t);
+            var btnC = document.getElementById("btnPresetComplete");
+            var btnP = document.getElementById("btnPresetPersonal");
+            if (btnC && btnP) {
+              btnC.classList.toggle("active", p === "complete");
+              btnP.classList.toggle("active", p === "personal");
+            }
+          } catch(e) {}
+        })();
+      </script>
 
       <!-- Stats Top Header -->
       <div class="top-header">
@@ -8589,7 +8604,7 @@
         const emptyState = document.createElement("div");
         emptyState.className = "empty-state";
         const currentTabName = PRESETS_SCHEMA[activePreset].tabs[currentTab].name;
-        emptyState.innerHTML = `No quests in <strong>${currentTabName}</strong>.<br>Use the <strong>Add Quest</strong> form or <strong>Manage Categories</strong> on the left, or switch to the <strong>Complete</strong> preset to browse and copy quests with one click!`;
+        emptyState.innerHTML = `No quests in <strong>${currentTabName}</strong>.<br>Use the <strong>Add Quest</strong> form or <strong>Manage Categories</strong> on the left, or switch to the <strong>Explorer</strong> preset to browse and copy quests with one click!`;
         container.appendChild(emptyState);
       } else if (isFiltering && totalMatchesRendered === 0) {
         const emptyState = document.createElement("div");
