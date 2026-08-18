@@ -2568,7 +2568,7 @@
 
     .quest-info-meta-row {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(auto-fit, minmax(88px, 1fr));
       gap: 8px;
       margin-bottom: 14px;
     }
@@ -2582,6 +2582,7 @@
       flex-direction: column;
       gap: 3px;
       text-align: center;
+      min-width: 0;
     }
 
     .quest-info-meta-pill .meta-label {
@@ -2590,17 +2591,33 @@
       text-transform: uppercase;
       letter-spacing: 0.5px;
       color: var(--text-dim);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .quest-info-meta-pill .meta-val {
       font-size: 0.88rem;
       font-weight: 700;
       color: var(--text-main);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .quest-info-meta-pill.highlight-astrite .meta-val {
       color: #38bdf8;
       text-shadow: 0 0 8px rgba(56, 189, 248, 0.35);
+    }
+
+    .quest-info-meta-pill.highlight-ul .meta-val {
+      color: #fcd34d;
+      text-shadow: 0 0 8px rgba(252, 211, 77, 0.35);
+    }
+
+    .quest-info-meta-pill.highlight-timegate .meta-val {
+      color: #fb923c;
+      text-shadow: 0 0 8px rgba(251, 146, 60, 0.35);
     }
 
     .quest-info-section {
@@ -3924,6 +3941,23 @@
         </span>
       </div>
 
+      <!-- Auto-Hide Empty Categories Switch -->
+      <div class="preset-sync-card" id="autoHideEmptyCard" onclick="toggleAutoHideEmptyCategories(event)" style="display: flex; flex-direction: column; gap: 5px; padding: 8px 10px; background: rgba(0, 0, 0, 0.35); border: 1px solid var(--border-subtle); border-radius: 4px; cursor: pointer; user-select: none; transition: background 0.15s ease, border-color 0.15s ease;">
+        <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+          <span style="color: var(--text-dim); font-size: 0.76rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 5px;">
+            <span style="font-size: 0.85rem; color: var(--theme-active);">⊘</span>
+            <span>Hide Empty</span>
+          </span>
+          <button type="button" class="btn-multi-sort-toggle active" id="btnAutoHideEmptyCategories" style="pointer-events: none;">
+            <span class="multi-sort-switch-thumb"></span>
+            <span id="autoHideEmptyCategoriesToggleText">On</span>
+          </button>
+        </div>
+        <span style="font-size: 0.71rem; color: var(--text-dim); line-height: 1.35;">
+          Automatically hides empty category cards when they have no quests or no filter matches.
+        </span>
+      </div>
+
       <script>
         (function() {
           try {
@@ -3941,6 +3975,11 @@
             var syncText = document.getElementById("syncPresetToggleText");
             if (syncBtn) syncBtn.classList.toggle("active", sync);
             if (syncText) syncText.textContent = sync ? "On" : "Off";
+            var autoHide = localStorage.getItem("wuwa_v2_auto_hide_empty_cats") !== "false";
+            var ahBtn = document.getElementById("btnAutoHideEmptyCategories");
+            var ahText = document.getElementById("autoHideEmptyCategoriesToggleText");
+            if (ahBtn) ahBtn.classList.toggle("active", autoHide);
+            if (ahText) ahText.textContent = autoHide ? "On" : "Off";
           } catch(e) {}
         })();
       </script>
@@ -3974,6 +4013,7 @@
           <button type="button" class="btn-sm-theme" onclick="openManageCategoriesModal()" style="padding: 5px 10px; font-size: 0.76rem;">⚙ Manage Categories</button>
         </div>
       </div>
+
 
       <!-- Tags Panel -->
       <div class="panel-box" style="padding: 12px 16px;">
@@ -4131,6 +4171,15 @@
               <button type="button" class="btn-multi-sort-toggle" id="btnFilterScopeTab" style="pointer-events: none;">
                 <span class="multi-sort-switch-thumb"></span>
                 <span id="filterScopeToggleText">Off</span>
+              </button>
+            </div>
+
+            <!-- Auto-Hide Empty Categories Toggle -->
+            <div class="sort-multi-toggle-row" onclick="toggleAutoHideEmptyCategories(event)">
+              <span class="sort-multi-label">Auto-Hide Empty Categories</span>
+              <button type="button" class="btn-multi-sort-toggle active" id="btnFilterAutoHideEmptyCats" style="pointer-events: none;">
+                <span class="multi-sort-switch-thumb"></span>
+                <span id="filterAutoHideEmptyCatsToggleText">On</span>
               </button>
             </div>
 
@@ -4868,15 +4917,23 @@
         <!-- Top Badges -->
         <div class="quest-info-meta-row">
           <div class="quest-info-meta-pill">
-            <span class="meta-label">Patch Release</span>
+            <span class="meta-label">Patch</span>
             <span class="meta-val" id="questInfoVersion">1.0 (1.X)</span>
+          </div>
+          <div class="quest-info-meta-pill highlight-ul">
+            <span class="meta-label">Union Level</span>
+            <span class="meta-val" id="questInfoUnionLevel">Lv. 1+</span>
+          </div>
+          <div class="quest-info-meta-pill highlight-timegate">
+            <span class="meta-label">Time Gate</span>
+            <span class="meta-val" id="questInfoTimeGate">None</span>
           </div>
           <div class="quest-info-meta-pill highlight-astrite">
             <span class="meta-label">Astrites</span>
             <span class="meta-val" id="questInfoAstrites">None</span>
           </div>
           <div class="quest-info-meta-pill">
-            <span class="meta-label">Chest Reward</span>
+            <span class="meta-label">Chests</span>
             <span class="meta-val" id="questInfoChest">None</span>
           </div>
         </div>
@@ -5035,18 +5092,18 @@ complete: {
               { id: 1003, cat: "huanglong_ch1", name: "Act I: First Resonance", done: false, astrites: 100, version: "1.0", cycle: "1.X", location: "Jinzhou", req: "Complete Main Quest 'Utterance of Marvels: II'", tags: ["tag_v1_0", "tag_v1_x", "tag_astrites", "tag_region_jinzhou"] },
               { id: 1004, cat: "huanglong_ch1", name: "Act II: Echoing Marche", done: false, astrites: 100, version: "1.0", cycle: "1.X", location: "Jinzhou", req: "Complete Main Quest 'First Resonance' (Act I)", tags: ["tag_v1_0", "tag_v1_x", "tag_astrites", "tag_region_jinzhou"] },
               { id: 1005, cat: "huanglong_ch1", name: "Act III: Ominous Star", done: false, astrites: 100, version: "1.0", cycle: "1.X", location: "Jinzhou", req: "Complete Main Quest 'Echoing Marche' (Act II)", tags: ["tag_v1_0", "tag_v1_x", "tag_astrites", "tag_region_jinzhou"] },
-              { id: 1006, cat: "huanglong_ch1", name: "Act IV: Clashing Blades", done: false, astrites: 100, version: "1.0", cycle: "1.X", location: "Jinzhou", req: "Reach Union Level 11 •€¢ Complete Main Quest 'Ominous Star' (Act III)", tags: ["tag_v1_0", "tag_v1_x", "tag_astrites", "tag_region_jinzhou"] },
-              { id: 1007, cat: "huanglong_ch1", name: "Act V: Rewinding Raindrops", done: false, astrites: 100, version: "1.0", cycle: "1.X", location: "Jinzhou •€¢ Tiger's Maw", req: "Reach Union Level 14 •€¢ Complete Main Quest 'Clashing Blades' (Act IV)", tags: ["tag_v1_0", "tag_v1_x", "tag_astrites", "tag_region_tigers_maw"] },
-              { id: 1008, cat: "huanglong_ch1", name: "Act VI: Grand Warstorm", done: false, astrites: 100, version: "1.0", cycle: "1.X", location: "Jinzhou •€¢ Norfall Barrens", req: "Reach Union Level 21 •€¢ Complete Main Quest 'Rewinding Raindrops' (Act V)", tags: ["tag_v1_0", "tag_v1_x", "tag_astrites", "tag_region_norfall_barrens"] },
+              { id: 1006, cat: "huanglong_ch1", name: "Act IV: Clashing Blades", done: false, astrites: 100, unionLevel: 11, version: "1.0", cycle: "1.X", location: "Jinzhou", req: "Reach Union Level 11 •€¢ Complete Main Quest 'Ominous Star' (Act III)", tags: ["tag_v1_0", "tag_v1_x", "tag_astrites", "tag_region_jinzhou"] },
+              { id: 1007, cat: "huanglong_ch1", name: "Act V: Rewinding Raindrops", done: false, astrites: 100, unionLevel: 14, version: "1.0", cycle: "1.X", location: "Jinzhou •€¢ Tiger's Maw", req: "Reach Union Level 14 •€¢ Complete Main Quest 'Clashing Blades' (Act IV)", tags: ["tag_v1_0", "tag_v1_x", "tag_astrites", "tag_region_tigers_maw"] },
+              { id: 1008, cat: "huanglong_ch1", name: "Act VI: Grand Warstorm", done: false, astrites: 100, unionLevel: 21, version: "1.0", cycle: "1.X", location: "Jinzhou •€¢ Norfall Barrens", req: "Reach Union Level 21 •€¢ Complete Main Quest 'Rewinding Raindrops' (Act V)", tags: ["tag_v1_0", "tag_v1_x", "tag_astrites", "tag_region_norfall_barrens"] },
               { id: 1009, cat: "huanglong_ch1", name: "Interlude: A New Companion", done: false, astrites: 60, version: "1.0", cycle: "1.X", location: "Jinzhou", req: "Complete Main Quest 'Grand Warstorm' (Act VI)", tags: ["tag_v1_1", "tag_v1_x", "tag_astrites", "tag_region_jinzhou"] },
-              { id: 1010, cat: "huanglong_ch1", name: "Act VII: Thaw of Eons", done: false, astrites: 100, version: "1.1", cycle: "1.X", location: "Mt. Firmament", req: "Reach Union Level 21 •€¢ Complete Main Quest 'Grand Warstorm' / Interlude", tags: ["tag_v1_1", "tag_v1_x", "tag_astrites", "tag_region_mt_firmament"] },
-              { id: 1011, cat: "huanglong_ch1", name: "Act VIII: To the Shore's End", done: false, astrites: 100, version: "1.0", cycle: "1.X", location: "The Black Shores", req: "Complete Main Quest 'Thaw of Eons' (Act VII)", tags: ["tag_v1_3", "tag_v1_x", "tag_astrites", "tag_region_black_shores"] },
-              { id: 1012, cat: "rinascita_ch2", name: "Prologue: Through the Sea Thou Break", done: false, astrites: 100, version: "2.0", cycle: "2.X", location: "The Black Shores •€¢ Tethys' Deep", req: "Complete Main Quest 'To the Shore's End' (Chapter I Act VIII)", tags: ["tag_v2_0", "tag_v2_x", "tag_astrites", "tag_region_tethys_deep"] },
+              { id: 1010, cat: "huanglong_ch1", name: "Act VII: Thaw of Eons", done: false, astrites: 100, unionLevel: 21, version: "1.1", cycle: "1.X", location: "Mt. Firmament", req: "Reach Union Level 21 •€¢ Complete Main Quest 'Grand Warstorm' / Interlude", tags: ["tag_v1_1", "tag_v1_x", "tag_astrites", "tag_region_mt_firmament"] },
+              { id: 1011, cat: "huanglong_ch1", name: "Act VIII: To the Shore's End", done: false, astrites: 100, unionLevel: 21, version: "1.0", cycle: "1.X", location: "The Black Shores", req: "Reach Union Level 21 • Complete Main Quest 'Thaw of Eons' (Act VII)", tags: ["tag_v1_3", "tag_v1_x", "tag_astrites", "tag_region_black_shores"] },
+              { id: 1012, cat: "rinascita_ch2", name: "Prologue: Through the Sea Thou Break", done: false, astrites: 100, unionLevel: 21, version: "2.0", cycle: "2.X", location: "The Black Shores •€¢ Tethys' Deep", req: "Reach Union Level 21 • Complete Main Quest 'To the Shore's End' (Chapter I Act VIII)", tags: ["tag_v2_0", "tag_v2_x", "tag_astrites", "tag_region_tethys_deep"] },
               { id: 1013, cat: "rinascita_ch2", name: "Act I: The Sacred Breeze So Often Breathes", done: false, astrites: 100, version: "2.0", cycle: "2.X", location: "Rinascita •€¢ Ragunna City", req: "Complete Chapter II Prologue 'Through the Sea Thou Break'", tags: ["tag_v2_0", "tag_v2_x", "tag_astrites", "tag_region_ragunna_city"] },
               { id: 1014, cat: "rinascita_ch2", name: "Act II: Veils Off in Sun or Shadow", done: false, astrites: 100, version: "2.0", cycle: "2.X", location: "Rinascita •€¢ Ragunna City", req: "Complete Main Quest 'The Sacred Breeze So Often Breathes' (Act I)", tags: ["tag_v2_0", "tag_v2_x", "tag_astrites", "tag_region_ragunna_city"] },
               { id: 1015, cat: "rinascita_ch2", name: "Act III: What Yesterday Wept, Today Doth Sing", done: false, astrites: 100, version: "2.0", cycle: "2.X", location: "Rinascita •€¢ Ragunna City", req: "Complete Main Quest 'Veils Off in Sun or Shadow' (Act II)", tags: ["tag_v2_0", "tag_v2_x", "tag_astrites", "tag_region_ragunna_city"] },
               { id: 1016, cat: "rinascita_ch2", name: "Interlude: Old Man and the Whale", done: false, astrites: 60, version: "2.0", cycle: "2.X", location: "Rinascita •€¢ Riccioli Islands", req: "Complete Main Quest 'What Yesterday Wept, Today Doth Sing' (Act III)", tags: ["tag_v2_1", "tag_v2_x", "tag_astrites", "tag_region_riccioli_islands"] },
-              { id: 1017, cat: "rinascita_ch2", name: "Act IV: The Maiden, The Defier, The Death Crier", done: false, astrites: 100, version: "2.2", cycle: "2.X", location: "Rinascita •€¢ Septimont", req: "Complete Main Quest 'What Yesterday Wept, Today Doth Sing' (Act III)", tags: ["tag_v2_2", "tag_v2_x", "tag_astrites", "tag_region_septimont"] },
+              { id: 1017, cat: "rinascita_ch2", name: "Act IV: The Maiden, The Defier, The Death Crier", done: false, astrites: 100, unionLevel: 25, version: "2.2", cycle: "2.X", location: "Rinascita •€¢ Septimont", req: "Reach Union Level 25 • Complete Main Quest 'What Yesterday Wept, Today Doth Sing' (Act III)", tags: ["tag_v2_2", "tag_v2_x", "tag_astrites", "tag_region_septimont"] },
               { id: 1018, cat: "rinascita_ch2", name: "Act V: Shadow of Glory", done: false, astrites: 100, version: "2.4", cycle: "2.X", location: "Rinascita •€¢ Septimont", req: "Complete Main Quest 'The Maiden, The Defier, The Death Crier' (Act IV)", tags: ["tag_v2_4", "tag_v2_x", "tag_astrites", "tag_region_septimont"] },
               { id: 1019, cat: "rinascita_ch2", name: "Act VI: Flames of Heart", done: false, astrites: 100, version: "2.4", cycle: "2.X", location: "Rinascita •€¢ Septimont", req: "Complete Main Quest 'Shadow of Glory' (Act V)", tags: ["tag_v2_4", "tag_v2_x", "tag_astrites", "tag_region_septimont"] },
               { id: 1020, cat: "rinascita_ch2", name: "Act VII: Dreamcatchers in the Secret Gardens", done: false, astrites: 100, version: "2.5", cycle: "2.X", location: "Rinascita •€¢ Ragunna City", req: "Complete Main Quest 'Flames of Heart' (Act VI)", tags: ["tag_v2_5", "tag_v2_x", "tag_astrites", "tag_region_ragunna_city"] },
@@ -5105,15 +5162,15 @@ complete: {
               { id: 2016, cat: "standard_tutorials", name: "SOL3 Phase Ascension: Phase III", done: false, version: "1.0", cycle: "1.X", location: "Jinzhou", req: "Reach Union Level 20", tags: ["tag_v1_0", "tag_v1_x", "tag_region_jinzhou"] },
               { id: 2017, cat: "standard_tutorials", name: "The Plushie Village", done: false, astrites: 20, version: "2.0", cycle: "2.X", location: "Jinzhou", req: "Available in world exploration / NPC interaction", tags: ["tag_v2_0", "tag_v2_x", "tag_astrites", "tag_region_jinzhou"] },
               { id: 2018, cat: "standard_tutorials", name: "When Colors Fade", done: false, version: "2.0", cycle: "2.X", location: "Jinzhou", req: "Complete any Overflowing Palette challenge.", tags: ["tag_v2_0", "tag_v2_x", "tag_region_jinzhou"] },
-              { id: 2019, cat: "event_tutorials", name: "Banners Never Fall", done: false, version: "2.4", cycle: "2.X", location: "Jinzhou", req: "Reach Union Level 14 •€¢ Reach the Bell Tower during Main Quest Chapter II Act VI \" Flames of Heart .\"", tags: ["tag_v2_4", "tag_v2_x", "tag_region_jinzhou"] },
+              { id: 2019, cat: "event_tutorials", name: "Banners Never Fall", done: false, version: "2.4", cycle: "2.X", location: "Jinzhou", req: "Reach Union Level 14 •€¢ Reach the Bell Tower during Main Quest Chapter II Act VI \" Flames of Heart .\"", unionLevel: 14, tags: ["tag_v2_4", "tag_v2_x", "tag_region_jinzhou"] },
               { id: 2020, cat: "event_tutorials", name: "Farewell! Let's Overdash!", done: false, version: "1.0", cycle: "1.X", location: "Jinzhou", req: "Finish Overdash Club event. Previous Quest(s): Get Ready! Let's Overdash!", tags: ["tag_v1_0", "tag_v1_x", "tag_region_jinzhou"] },
-              { id: 2021, cat: "event_tutorials", name: "Get Ready! Let's Overdash!", done: false, version: "1.0", cycle: "1.X", location: "Jinzhou", req: "Log in while Overdash Club event is ongoing. Reach Union Level 14 and complete Main Quest: Chapter 1 Act 2.", tags: ["tag_v1_0", "tag_v1_x", "tag_region_jinzhou"] },
-              { id: 2022, cat: "event_tutorials", name: "Moonlit Reunion", done: false, astrites: 30, version: "1.2", cycle: "1.X", location: "Jinzhou", req: "Reach Union Level 17 •€¢ Complete Ominous Star", tags: ["tag_v1_2", "tag_v1_x", "tag_astrites", "tag_region_jinzhou"] },
-              { id: 2023, cat: "event_tutorials", name: "Operation: Frontier Renewal", done: false, version: "3.0", cycle: "3.X", location: "Jinzhou", req: "Reach Union Level 8", tags: ["tag_v3_0", "tag_v3_x", "tag_region_jinzhou"] },
-              { id: 2024, cat: "event_tutorials", name: "Pincer Maneuver Warriors", done: false, version: "1.4", cycle: "1.X", location: "Jinzhou", req: "Reach Union Level 40", tags: ["tag_v1_4", "tag_v1_x", "tag_region_jinzhou"] },
-              { id: 2025, cat: "event_tutorials", name: "Second Coming of Solaris", done: false, astrites: 60, version: "1.0", cycle: "1.X", location: "Jinzhou", req: "Reach Union Level 14 •€¢ Complete Main Quest Echoing Marche in Chapter I : Act II •€¢ Log in during the Second Coming of Solaris event", tags: ["tag_v1_0", "tag_v1_x", "tag_astrites", "tag_region_jinzhou"] },
-              { id: 2026, cat: "event_tutorials", name: "Set Sail! Pro Angler!", done: false, astrites: 20, version: "2.1", cycle: "2.X", location: "Jinzhou", req: "Reach Union Level 14 •€¢ Complete Main Quest Through the Sea Thou Break in Chapter II : Prologue", tags: ["tag_v2_1", "tag_v2_x", "tag_astrites", "tag_region_jinzhou"] },
-              { id: 2027, cat: "event_tutorials", name: "Somnoire: Illusive Realms", done: false, astrites: 20, version: "1.0", cycle: "1.X", location: "Jinzhou", req: "Log in while Depths of Illusive Realm event is ongoing. Reach Union Level 17.", tags: ["tag_v1_0", "tag_v1_x", "tag_astrites", "tag_region_jinzhou"] }
+              { id: 2021, cat: "event_tutorials", name: "Get Ready! Let's Overdash!", done: false, version: "1.0", cycle: "1.X", location: "Jinzhou", req: "Log in while Overdash Club event is ongoing. Reach Union Level 14 and complete Main Quest: Chapter 1 Act 2.", unionLevel: 14, tags: ["tag_v1_0", "tag_v1_x", "tag_region_jinzhou"] },
+              { id: 2022, cat: "event_tutorials", name: "Moonlit Reunion", done: false, astrites: 30, version: "1.2", cycle: "1.X", location: "Jinzhou", req: "Reach Union Level 17 •€¢ Complete Ominous Star", unionLevel: 17, tags: ["tag_v1_2", "tag_v1_x", "tag_astrites", "tag_region_jinzhou"] },
+              { id: 2023, cat: "event_tutorials", name: "Operation: Frontier Renewal", done: false, version: "3.0", cycle: "3.X", location: "Jinzhou", req: "Reach Union Level 8", unionLevel: 8, tags: ["tag_v3_0", "tag_v3_x", "tag_region_jinzhou"] },
+              { id: 2024, cat: "event_tutorials", name: "Pincer Maneuver Warriors", done: false, version: "1.4", cycle: "1.X", location: "Jinzhou", req: "Reach Union Level 40", unionLevel: 40, tags: ["tag_v1_4", "tag_v1_x", "tag_region_jinzhou"] },
+              { id: 2025, cat: "event_tutorials", name: "Second Coming of Solaris", done: false, astrites: 60, version: "1.0", cycle: "1.X", location: "Jinzhou", req: "Reach Union Level 14 •€¢ Complete Main Quest Echoing Marche in Chapter I : Act II •€¢ Log in during the Second Coming of Solaris event", unionLevel: 14, tags: ["tag_v1_0", "tag_v1_x", "tag_astrites", "tag_region_jinzhou"] },
+              { id: 2026, cat: "event_tutorials", name: "Set Sail! Pro Angler!", done: false, astrites: 20, version: "2.1", cycle: "2.X", location: "Jinzhou", req: "Reach Union Level 14 •€¢ Complete Main Quest Through the Sea Thou Break in Chapter II : Prologue", unionLevel: 14, tags: ["tag_v2_1", "tag_v2_x", "tag_astrites", "tag_region_jinzhou"] },
+              { id: 2027, cat: "event_tutorials", name: "Somnoire: Illusive Realms", done: false, astrites: 20, version: "1.0", cycle: "1.X", location: "Jinzhou", req: "Log in while Depths of Illusive Realm event is ongoing. Reach Union Level 17.", unionLevel: 17, tags: ["tag_v1_0", "tag_v1_x", "tag_astrites", "tag_region_jinzhou"] }
             ]
           },
           companion: {
@@ -5124,18 +5181,19 @@ complete: {
               huanglong_resonators: { title: "Huanglong Resonators", subtitle: "Character Story Episodes" },
               black_shores_resonators: { title: "Black Shores & Rinascita Resonators", subtitle: "Character Story Episodes" }
             },
-            defaultQuests: [              { id: 3001, cat: "huanglong_resonators", name: "Wild Heart's Return (Lingyang)", done: false, astrites: 100, version: "1.0", cycle: "1.X", location: "Jinzhou", req: "Reach Union Level 14 •€¢ Complete Main Quest 'Clashing Blades' (Act IV)", tags: ["tag_v1_0", "tag_v1_x", "tag_astrites", "tag_region_jinzhou"] },
-              { id: 3002, cat: "huanglong_resonators", name: "Daybreak at Last (Jiyan)", done: false, astrites: 100, version: "1.0", cycle: "1.X", location: "Jinzhou •€¢ Norfall Barrens", req: "Reach Union Level 21 •€¢ Complete Main Quest 'Grand Warstorm' (Act VI)", tags: ["tag_v1_0", "tag_v1_x", "tag_astrites", "tag_region_jinzhou"] },
-              { id: 3003, cat: "huanglong_resonators", name: "Solitary Path (Yinlin)", done: false, astrites: 100, version: "1.0", cycle: "1.X", location: "Jinzhou", req: "Reach Union Level 25 •€¢ Complete Main Quest 'Clashing Blades' (Act IV)", tags: ["tag_v1_0", "tag_v1_x", "tag_astrites", "tag_region_jinzhou"] },
-              { id: 3004, cat: "huanglong_resonators", name: "Immortal Blaze (Changli)", done: false, astrites: 100, version: "1.1", cycle: "1.X", location: "Mt. Firmament •€¢ Hongzhen", req: "Complete Main Quest 'Thaw of Eons' (Act VII)", tags: ["tag_v1_1", "tag_v1_x", "tag_astrites", "tag_region_hongzhen"] },
-              { id: 3005, cat: "huanglong_resonators", name: "True Colors (Zhezhi)", done: false, astrites: 100, version: "1.2", cycle: "1.X", location: "Jinzhou", req: "Complete 'Wish Upon the Moon I: Cry of the Soul'", tags: ["tag_v1_2", "tag_v1_x", "tag_astrites", "tag_region_jinzhou"] },
-              { id: 3006, cat: "huanglong_resonators", name: "Small Wooly, Big Adventures (Encore)", done: false, astrites: 100, version: "1.3", cycle: "1.X", location: "Jinzhou", req: "Complete Main Quest 'Grand Warstorm' (Act VI)", tags: ["tag_v1_3", "tag_v1_x", "tag_astrites", "tag_region_jinzhou"] },
-              { id: 3007, cat: "black_shores_resonators", name: "Forking Path Among the Stars (Camellya)", done: false, astrites: 100, version: "1.4", cycle: "1.X", location: "The Black Shores", req: "Complete Main Quest 'To the Shore''s End' (Act VIII)", tags: ["tag_v1_4", "tag_v1_x", "tag_astrites", "tag_region_black_shores"] },
-              { id: 3008, cat: "black_shores_resonators", name: "If On a Rainy Night a Family (Carlotta)", done: false, astrites: 100, version: "2.0", cycle: "2.X", location: "Rinascita •€¢ Ragunna City", req: "Complete Main Quest 'What Yesterday Wept, Today Doth Sing' (Act III)", tags: ["tag_v2_0", "tag_v2_x", "tag_astrites", "tag_region_ragunna_city"] },
-              { id: 3009, cat: "black_shores_resonators", name: "Starry is the Night (Roccia)", done: false, astrites: 100, version: "2.0", cycle: "2.X", location: "Rinascita •€¢ Ragunna City", req: "Complete Main Quest 'What Yesterday Wept, Today Doth Sing' (Act III)", tags: ["tag_v2_0", "tag_v2_x", "tag_astrites", "tag_region_ragunna_city"] },
-              { id: 3010, cat: "black_shores_resonators", name: "Sail Day, Captain! (Brant)", done: false, astrites: 100, version: "2.1", cycle: "2.X", location: "Rinascita •€¢ Riccioli Islands", req: "Complete Main Quest 'What Yesterday Wept, Today Doth Sing' (Act III)", tags: ["tag_v2_1", "tag_v2_x", "tag_astrites", "tag_region_riccioli_islands"] },
-              { id: 3011, cat: "black_shores_resonators", name: "A Fleeting Night's Dream (Cantarella)", done: false, astrites: 100, version: "2.2", cycle: "2.X", location: "Rinascita •€¢ Septimont", req: "Complete Main Quest 'The Maiden, The Defier, The Death Crier' (Act IV)", tags: ["tag_v2_2", "tag_v2_x", "tag_astrites", "tag_region_septimont"] },
-              { id: 3012, cat: "black_shores_resonators", name: "A Blaze in the Dark (Zani)", done: false, astrites: 100, version: "2.5", cycle: "2.X", location: "Rinascita •€¢ Septimont", req: "Complete Main Quest 'The Maiden, The Defier, The Death Crier' (Act IV)", tags: ["tag_v2_3", "tag_v2_x", "tag_astrites", "tag_region_septimont"] }
+            defaultQuests: [
+              { id: 3001, cat: "huanglong_resonators", name: "Wild Heart's Return (Lingyang)", done: false, astrites: 100, unionLevel: 14, version: "1.0", cycle: "1.X", location: "Jinzhou", req: "Reach Union Level 14 • Complete Main Quest 'Clashing Blades' (Act IV)", tags: ["tag_v1_0", "tag_v1_x", "tag_astrites", "tag_region_jinzhou"] },
+              { id: 3002, cat: "huanglong_resonators", name: "Daybreak at Last (Jiyan)", done: false, astrites: 100, unionLevel: 21, version: "1.0", cycle: "1.X", location: "Jinzhou • Norfall Barrens", req: "Reach Union Level 21 • Complete Main Quest 'Grand Warstorm' (Act VI)", tags: ["tag_v1_0", "tag_v1_x", "tag_astrites", "tag_region_jinzhou"] },
+              { id: 3003, cat: "huanglong_resonators", name: "Solitary Path (Yinlin)", done: false, astrites: 100, unionLevel: 25, version: "1.0", cycle: "1.X", location: "Jinzhou", req: "Reach Union Level 25 • Complete Main Quest 'Clashing Blades' (Act IV)", tags: ["tag_v1_0", "tag_v1_x", "tag_astrites", "tag_region_jinzhou"] },
+              { id: 3004, cat: "huanglong_resonators", name: "Immortal Blaze (Changli)", done: false, astrites: 100, unionLevel: 21, version: "1.1", cycle: "1.X", location: "Mt. Firmament • Hongzhen", req: "Reach Union Level 21 • Complete Main Quest 'Thaw of Eons' (Act VII)", tags: ["tag_v1_1", "tag_v1_x", "tag_astrites", "tag_region_hongzhen"] },
+              { id: 3005, cat: "huanglong_resonators", name: "True Colors (Zhezhi)", done: false, astrites: 100, unionLevel: 21, version: "1.2", cycle: "1.X", location: "Jinzhou", req: "Reach Union Level 21 • Complete 'Wish Upon the Moon I: Cry of the Soul'", tags: ["tag_v1_2", "tag_v1_x", "tag_astrites", "tag_region_jinzhou"] },
+              { id: 3006, cat: "huanglong_resonators", name: "Small Wooly, Big Adventures (Encore)", done: false, astrites: 100, unionLevel: 21, version: "1.3", cycle: "1.X", location: "Jinzhou", req: "Reach Union Level 21 • Complete Main Quest 'Grand Warstorm' (Act VI)", tags: ["tag_v1_3", "tag_v1_x", "tag_astrites", "tag_region_jinzhou"] },
+              { id: 3007, cat: "black_shores_resonators", name: "Forking Path Among the Stars (Camellya)", done: false, astrites: 100, unionLevel: 21, version: "1.4", cycle: "1.X", location: "The Black Shores", req: "Reach Union Level 21 • Complete Main Quest 'To the Shore''s End' (Act VIII)", tags: ["tag_v1_4", "tag_v1_x", "tag_astrites", "tag_region_black_shores"] },
+              { id: 3008, cat: "black_shores_resonators", name: "If On a Rainy Night a Family (Carlotta)", done: false, astrites: 100, unionLevel: 21, version: "2.0", cycle: "2.X", location: "Rinascita • Ragunna City", req: "Reach Union Level 21 • Complete Main Quest 'What Yesterday Wept, Today Doth Sing' (Act III)", tags: ["tag_v2_0", "tag_v2_x", "tag_astrites", "tag_region_ragunna_city"] },
+              { id: 3009, cat: "black_shores_resonators", name: "Starry is the Night (Roccia)", done: false, astrites: 100, unionLevel: 21, version: "2.0", cycle: "2.X", location: "Rinascita • Ragunna City", req: "Reach Union Level 21 • Complete Main Quest 'What Yesterday Wept, Today Doth Sing' (Act III)", tags: ["tag_v2_0", "tag_v2_x", "tag_astrites", "tag_region_ragunna_city"] },
+              { id: 3010, cat: "black_shores_resonators", name: "Sail Day, Captain! (Brant)", done: false, astrites: 100, unionLevel: 21, version: "2.1", cycle: "2.X", location: "Rinascita • Riccioli Islands", req: "Reach Union Level 21 • Complete Main Quest 'What Yesterday Wept, Today Doth Sing' (Act III)", tags: ["tag_v2_1", "tag_v2_x", "tag_astrites", "tag_region_riccioli_islands"] },
+              { id: 3011, cat: "black_shores_resonators", name: "A Fleeting Night's Dream (Cantarella)", done: false, astrites: 100, unionLevel: 25, version: "2.2", cycle: "2.X", location: "Rinascita • Septimont", req: "Reach Union Level 25 • Complete Main Quest 'The Maiden, The Defier, The Death Crier' (Act IV)", tags: ["tag_v2_2", "tag_v2_x", "tag_astrites", "tag_region_septimont"] },
+              { id: 3012, cat: "black_shores_resonators", name: "A Blaze in the Dark (Zani)", done: false, astrites: 100, unionLevel: 25, version: "2.5", cycle: "2.X", location: "Rinascita • Septimont", req: "Reach Union Level 25 • Complete Main Quest 'The Maiden, The Defier, The Death Crier' (Act IV)", tags: ["tag_v2_3", "tag_v2_x", "tag_astrites", "tag_region_septimont"] }
             ]
           },
           event: {
@@ -5227,8 +5285,8 @@ complete: {
               { id: 4078, cat: "event_side_quests", name: "Ragunna Sales Blitz VI", done: false, version: "2.0", cycle: "2.X", location: "Rinascita •€¢ Ragunna City", req: "Available in world exploration / NPC interaction", tags: ["tag_v2_0", "tag_v2_x", "tag_region_ragunna_city"] },
               { id: 4079, cat: "event_side_quests", name: "Riddle and Reunion", done: false, version: "1.2", cycle: "1.X", location: "Jinzhou", req: "Complete Wish Upon the Moon II: The Elder's Promise •€¢ Build \"Riddle Twiddle\" at Moonlit Fair during the By Moon's Grace event.", tags: ["tag_v1_2", "tag_v1_x", "tag_region_jinzhou"] },
               { id: 4080, cat: "event_side_quests", name: "Sea of Flowers in the Valley", done: false, version: "1.0", cycle: "1.X", location: "Jinzhou", req: "Previous Quest(s): Specialty Drinks", tags: ["tag_v1_0", "tag_v1_x", "tag_region_jinzhou"] },
-              { id: 4081, cat: "event_side_quests", name: "Solaris Weather Forecast", done: false, astrites: 20, version: "1.3", cycle: "1.X", location: "Jinzhou", req: "Reach Union Level 14 •€¢ Complete Main Quest Thaw of Eons", tags: ["tag_v1_3", "tag_v1_x", "tag_astrites", "tag_region_jinzhou"] },
-              { id: 4082, cat: "event_side_quests", name: "Solaris Weather Forecast: Epilogue", done: false, version: "1.3", cycle: "1.X", location: "Jinzhou", req: "Reach Union Level 14 •€¢ Complete Main Quest Thaw of Eons", tags: ["tag_v1_3", "tag_v1_x", "tag_region_jinzhou"] },
+              { id: 4081, cat: "event_side_quests", name: "Solaris Weather Forecast", done: false, astrites: 20, unionLevel: 14, version: "1.3", cycle: "1.X", location: "Jinzhou", req: "Reach Union Level 14 •€¢ Complete Main Quest Thaw of Eons", tags: ["tag_v1_3", "tag_v1_x", "tag_astrites", "tag_region_jinzhou"] },
+              { id: 4082, cat: "event_side_quests", name: "Solaris Weather Forecast: Epilogue", done: false, unionLevel: 14, version: "1.3", cycle: "1.X", location: "Jinzhou", req: "Reach Union Level 14 •€¢ Complete Main Quest Thaw of Eons", tags: ["tag_v1_3", "tag_v1_x", "tag_region_jinzhou"] },
               { id: 4083, cat: "event_side_quests", name: "Specialty Drinks", done: false, version: "1.0", cycle: "1.X", location: "Jinzhou", req: "Previous Quest(s): Second Coming of Solaris (Quest)", tags: ["tag_v1_0", "tag_v1_x", "tag_region_jinzhou"] },
               { id: 4084, cat: "event_side_quests", name: "Tactical Simulacra (Side Quest)", done: false, version: "1.4", cycle: "1.X", location: "Jinzhou", req: "Available in world exploration / NPC interaction", tags: ["tag_v1_4", "tag_v1_x", "tag_region_jinzhou"] },
               { id: 4085, cat: "event_side_quests", name: "Tactical Simulacra: Rerun", done: false, version: "1.4", cycle: "1.X", location: "Jinzhou", req: "Available in world exploration / NPC interaction", tags: ["tag_v1_4", "tag_v1_x", "tag_region_jinzhou"] },
@@ -5238,7 +5296,7 @@ complete: {
               { id: 4089, cat: "event_side_quests", name: "Uncovering Past Heroes (Quest)", done: false, version: "2.4", cycle: "2.X", location: "Jinzhou", req: "Complete Main Quest Chapter II Act V \" Shadow of Glory \". •€¢ Complete side quest \" Scale of Past \".", tags: ["tag_v2_4", "tag_v2_x", "tag_region_jinzhou"] },
               { id: 4090, cat: "event_side_quests", name: "Under the Same Moonlit Sky", done: false, version: "1.2", cycle: "1.X", location: "Jinzhou", req: "Complete Wish Upon the Moon II: The Elder's Promise •€¢ Build \"Plum Blossom Pole\" at Moonlit Fair during the By Moon's Grace event.", tags: ["tag_v1_2", "tag_v1_x", "tag_region_jinzhou"] },
               { id: 4091, cat: "event_side_quests", name: "Unforgettable Dishes", done: false, version: "1.0", cycle: "1.X", location: "Jinzhou", req: "Previous Quest(s): Crownless?", tags: ["tag_v1_0", "tag_v1_x", "tag_region_jinzhou"] },
-              { id: 4092, cat: "event_side_quests", name: "Virtual Crisis", done: false, version: "2.2", cycle: "2.X", location: "Jinzhou", req: "Reach Union Level 30.", tags: ["tag_v2_2", "tag_v2_x", "tag_region_jinzhou"] },
+              { id: 4092, cat: "event_side_quests", name: "Virtual Crisis", done: false, unionLevel: 30, version: "2.2", cycle: "2.X", location: "Jinzhou", req: "Reach Union Level 30.", tags: ["tag_v2_2", "tag_v2_x", "tag_region_jinzhou"] },
               { id: 4093, cat: "event_side_quests", name: "Wish You Were Here", done: false, version: "1.2", cycle: "1.X", location: "Jinzhou", req: "Complete Wish Upon the Moon I: Cry of the Soul •€¢ Build \"Fan Drawing Stall\" at Moonlit Fair during the By Moon's Grace event.", tags: ["tag_v1_2", "tag_v1_x", "tag_region_jinzhou"] },
               { id: 4094, cat: "event_side_quests", name: "Woman in Mask", done: false, astrites: 20, version: "2.1", cycle: "2.X", location: "Jinzhou", req: "Complete Old Man and the Whale (Quest)", tags: ["tag_v2_1", "tag_v2_x", "tag_astrites", "tag_region_jinzhou"] }
             ]
@@ -5254,19 +5312,19 @@ complete: {
               frostlands_exploration: { title: "Frostlands Exploration", subtitle: "Lahai-Roi & Solisia Landing" },
               mengzhou_exploration: { title: "Mengzhou Exploration", subtitle: "WavesLine & Mountain Terraces" }
             },
-            defaultQuests: [              { id: 5001, cat: "huanglong_exploration", name: "Hidden Dangers in Peaceful Life", done: false, astrites: 50, version: "1.0", cycle: "1.X", location: "Jinzhou", req: "Reach Union Level 15 •€¢ Complete Clashing Blades", chests: 1, chest: true, tags: ["tag_v1_0", "tag_v1_x", "tag_astrites", "tag_region_jinzhou", "tag_chests"] },
-              { id: 5002, cat: "huanglong_exploration", name: "Shadow of the Past", done: false, astrites: 50, version: "1.0", cycle: "1.X", location: "Jinzhou", req: "Reach Union Level 15 •€¢ Wait 24 hours real-time after completing Hidden Dangers in Peaceful Life Previous Quest(s): Hidden Dangers in Peaceful Life", chests: 1, chest: true, tags: ["tag_v1_0", "tag_v1_x", "tag_astrites", "tag_region_jinzhou", "tag_chests"] },
-              { id: 5003, cat: "huanglong_exploration", name: "Stygian Lacrimosa", done: false, astrites: 50, version: "1.0", cycle: "1.X", location: "Jinzhou", req: "Complete Main Quest Rewinding Raindrops in Chapter I : Act V •€¢ Reach Union Level 25", chests: 1, chest: true, tags: ["tag_v1_0", "tag_v1_x", "tag_astrites", "tag_region_jinzhou", "tag_chests"] },
-              { id: 5004, cat: "huanglong_exploration", name: "We Promise, We Deliver", done: false, astrites: 50, version: "1.0", cycle: "1.X", location: "Jinzhou", req: "Complete Ominous Star •€¢ Reach Union Level 10", chests: 1, chest: true, tags: ["tag_v1_0", "tag_v1_x", "tag_astrites", "tag_region_jinzhou", "tag_chests"] },
-              { id: 5005, cat: "huanglong_exploration", name: "When the Forest is No Longer Dim", done: false, astrites: 50, version: "1.0", cycle: "1.X", location: "Dim Forest", req: "Available in world exploration / NPC interaction", chests: 1, chest: true, tags: ["tag_v1_0", "tag_v1_x", "tag_astrites", "tag_region_dim_forest", "tag_chests"] },
-              { id: 5006, cat: "huanglong_exploration", name: "Glorious Loong's Pearl", done: false, astrites: 50, version: "1.1", cycle: "1.X", location: "Xuanji Ridges", req: "Previous Quest(s): Boundary Of Yellow And White", chests: 1, chest: true, tags: ["tag_v1_1", "tag_v1_x", "tag_astrites", "tag_region_xuanji_ridge", "tag_chests"] },
-              { id: 5007, cat: "huanglong_exploration", name: "Glorious Loong's Pearl: The Last Rite", done: false, astrites: 50, version: "1.1", cycle: "1.X", location: "Xuanji Ridges", req: "Previous Quest(s): Boundary Of Yellow And White", chests: 2, chest: true, tags: ["tag_v1_1", "tag_v1_x", "tag_astrites", "tag_region_xuanji_ridge", "tag_chests"] },
-              { id: 5008, cat: "huanglong_exploration", name: "Among the Shoals and Islands", done: false, astrites: 40, version: "1.1", cycle: "1.X", location: "Xuanji Ridges", req: "Previous Quest(s): Glorious Loong's Pearl", chests: 1, chest: true, tags: ["tag_v1_1", "tag_v1_x", "tag_astrites", "tag_region_xuanji_ridge", "tag_chests"] },
-              { id: 5009, cat: "huanglong_exploration", name: "Boundary Of Yellow And White", done: false, astrites: 50, version: "1.1", cycle: "1.X", location: "Xuanji Ridges", req: "Previous Quest(s): Glorious Loong's Pearl", chests: 1, chest: true, tags: ["tag_v1_1", "tag_v1_x", "tag_astrites", "tag_region_xuanji_ridge", "tag_chests"] },
-              { id: 5010, cat: "huanglong_exploration", name: "Mirrored Loong's Pearl", done: false, astrites: 50, version: "1.1", cycle: "1.X", location: "Xuanji Ridges", req: "Complete Thaw of Eons •€¢ Reach Union Level 21", chests: 1, chest: true, tags: ["tag_v1_1", "tag_v1_x", "tag_astrites", "tag_region_xuanji_ridge", "tag_chests"] },
-              { id: 5011, cat: "huanglong_exploration", name: "Peak of The Arch-Shaped Rock", done: false, astrites: 40, version: "1.1", cycle: "1.X", location: "Xuanji Ridges", req: "Previous Quest(s): Glorious Loong's Pearl", chests: 1, chest: true, tags: ["tag_v1_1", "tag_v1_x", "tag_astrites", "tag_region_xuanji_ridge", "tag_chests"] },
-              { id: 5012, cat: "huanglong_exploration", name: "Where The Waterfalls Meet", done: false, astrites: 40, version: "1.1", cycle: "1.X", location: "Xuanji Ridges", req: "Previous Quest(s): Glorious Loong's Pearl", chests: 1, chest: true, tags: ["tag_v1_1", "tag_v1_x", "tag_astrites", "tag_region_xuanji_ridge", "tag_chests"] },
-              { id: 5013, cat: "huanglong_exploration", name: "Vigil of Endless Night", done: false, astrites: 50, version: "1.2", cycle: "1.X", location: "Jinzhou", req: "Complete Thaw of Eons", chests: 1, chest: true, tags: ["tag_v1_2", "tag_v1_x", "tag_astrites", "tag_region_jinzhou", "tag_chests"] },
+            defaultQuests: [              { id: 5001, cat: "huanglong_exploration", name: "Hidden Dangers in Peaceful Life", done: false, astrites: 50, unionLevel: 15, version: "1.0", cycle: "1.X", location: "Jinzhou", req: "Reach Union Level 15 •€¢ Complete Clashing Blades", chests: 1, chest: true, tags: ["tag_v1_0", "tag_v1_x", "tag_astrites", "tag_region_jinzhou", "tag_chests"] },
+              { id: 5002, cat: "huanglong_exploration", name: "Shadow of the Past", done: false, astrites: 50, unionLevel: 15, waitTime: "24h real-world daily reset after Hidden Dangers in Peaceful Life", version: "1.0", cycle: "1.X", location: "Jinzhou", req: "Reach Union Level 15 •€¢ Wait 24 hours real-time after completing Hidden Dangers in Peaceful Life Previous Quest(s): Hidden Dangers in Peaceful Life", chests: 1, chest: true, tags: ["tag_v1_0", "tag_v1_x", "tag_astrites", "tag_region_jinzhou", "tag_chests"] },
+              { id: 5003, cat: "huanglong_exploration", name: "Stygian Lacrimosa", done: false, astrites: 50, unionLevel: 25, version: "1.0", cycle: "1.X", location: "Jinzhou", req: "Complete Main Quest Rewinding Raindrops in Chapter I : Act V •€¢ Reach Union Level 25", chests: 1, chest: true, tags: ["tag_v1_0", "tag_v1_x", "tag_astrites", "tag_region_jinzhou", "tag_chests"] },
+              { id: 5004, cat: "huanglong_exploration", name: "We Promise, We Deliver", done: false, astrites: 50, unionLevel: 10, waitTime: "In-game next day (08:00 - 12:00)", version: "1.0", cycle: "1.X", location: "Jinzhou", req: "Complete Ominous Star •€¢ Reach Union Level 10", chests: 1, chest: true, tags: ["tag_v1_0", "tag_v1_x", "tag_astrites", "tag_region_jinzhou", "tag_chests"] },
+              { id: 5005, cat: "huanglong_exploration", name: "When the Forest is No Longer Dim", done: false, astrites: 50, unionLevel: 10, waitTime: "Adjust in-game clock or next daily reset", version: "1.0", cycle: "1.X", location: "Dim Forest", req: "Available in world exploration / NPC interaction", chests: 1, chest: true, tags: ["tag_v1_0", "tag_v1_x", "tag_astrites", "tag_region_dim_forest", "tag_chests"] },
+              { id: 5006, cat: "huanglong_exploration", name: "Glorious Loong's Pearl", done: false, astrites: 50, unionLevel: 21, version: "1.1", cycle: "1.X", location: "Xuanji Ridges", req: "Previous Quest(s): Boundary Of Yellow And White", chests: 1, chest: true, tags: ["tag_v1_1", "tag_v1_x", "tag_astrites", "tag_region_xuanji_ridge", "tag_chests"] },
+              { id: 5007, cat: "huanglong_exploration", name: "Glorious Loong's Pearl: The Last Rite", done: false, astrites: 50, unionLevel: 21, waitTime: "24h real-world daily reset after Glorious Loong's Pearl", version: "1.1", cycle: "1.X", location: "Xuanji Ridges", req: "Previous Quest(s): Boundary Of Yellow And White", chests: 2, chest: true, tags: ["tag_v1_1", "tag_v1_x", "tag_astrites", "tag_region_xuanji_ridge", "tag_chests"] },
+              { id: 5008, cat: "huanglong_exploration", name: "Among the Shoals and Islands", done: false, astrites: 40, unionLevel: 21, version: "1.1", cycle: "1.X", location: "Xuanji Ridges", req: "Previous Quest(s): Glorious Loong's Pearl", chests: 1, chest: true, tags: ["tag_v1_1", "tag_v1_x", "tag_astrites", "tag_region_xuanji_ridge", "tag_chests"] },
+              { id: 5009, cat: "huanglong_exploration", name: "Boundary Of Yellow And White", done: false, astrites: 50, unionLevel: 21, version: "1.1", cycle: "1.X", location: "Xuanji Ridges", req: "Previous Quest(s): Glorious Loong's Pearl", chests: 1, chest: true, tags: ["tag_v1_1", "tag_v1_x", "tag_astrites", "tag_region_xuanji_ridge", "tag_chests"] },
+              { id: 5010, cat: "huanglong_exploration", name: "Mirrored Loong's Pearl", done: false, astrites: 50, unionLevel: 21, version: "1.1", cycle: "1.X", location: "Xuanji Ridges", req: "Complete Thaw of Eons •€¢ Reach Union Level 21", chests: 1, chest: true, tags: ["tag_v1_1", "tag_v1_x", "tag_astrites", "tag_region_xuanji_ridge", "tag_chests"] },
+              { id: 5011, cat: "huanglong_exploration", name: "Peak of The Arch-Shaped Rock", done: false, astrites: 40, unionLevel: 21, version: "1.1", cycle: "1.X", location: "Xuanji Ridges", req: "Previous Quest(s): Glorious Loong's Pearl", chests: 1, chest: true, tags: ["tag_v1_1", "tag_v1_x", "tag_astrites", "tag_region_xuanji_ridge", "tag_chests"] },
+              { id: 5012, cat: "huanglong_exploration", name: "Where The Waterfalls Meet", done: false, astrites: 40, unionLevel: 21, version: "1.1", cycle: "1.X", location: "Xuanji Ridges", req: "Previous Quest(s): Glorious Loong's Pearl", chests: 1, chest: true, tags: ["tag_v1_1", "tag_v1_x", "tag_astrites", "tag_region_xuanji_ridge", "tag_chests"] },
+              { id: 5013, cat: "huanglong_exploration", name: "Vigil of Endless Night", done: false, astrites: 50, unionLevel: 21, version: "1.2", cycle: "1.X", location: "Jinzhou", req: "Complete Thaw of Eons", chests: 1, chest: true, tags: ["tag_v1_2", "tag_v1_x", "tag_astrites", "tag_region_jinzhou", "tag_chests"] },
               { id: 5014, cat: "rinascita_exploration", name: "Hymn of the Sea of Clouds: Rainbow", done: false, astrites: 50, version: "2.0", cycle: "2.X", location: "Nimbus Sanctum", req: "Available in world exploration / NPC interaction", chests: 1, chest: true, tags: ["tag_v2_0", "tag_v2_x", "tag_astrites", "tag_region_jinzhou", "tag_chests"] },
               { id: 5015, cat: "rinascita_exploration", name: "Hymn of the Sea of Clouds: Storm", done: false, astrites: 50, version: "2.0", cycle: "2.X", location: "Jinzhou", req: "Previous Quest(s): Hymn of the Sea of Clouds: Rainbow", chests: 1, chest: true, tags: ["tag_v2_0", "tag_v2_x", "tag_astrites", "tag_region_jinzhou", "tag_chests"] },
               { id: 5016, cat: "rinascita_exploration", name: "Shadow of the Towers", done: false, astrites: 50, version: "2.0", cycle: "2.X", location: "Jinzhou", req: "Previous Quest(s): Shadow of the Towers: Resounding Rise", chests: 1, chest: true, tags: ["tag_v2_0", "tag_v2_x", "tag_astrites", "tag_region_jinzhou", "tag_chests"] },
@@ -5341,7 +5399,7 @@ complete: {
               { id: 6035, cat: "huanglong_side", name: "Repair the Lighthouse at the Wuming Bay", done: false, version: "1.0", cycle: "1.X", location: "Jinzhou", req: "Available in world exploration / NPC interaction", tags: ["tag_v1_0", "tag_v1_x", "tag_region_jinzhou"] },
               { id: 6036, cat: "huanglong_side", name: "Repair the lighthouse in Desorock Highland", done: false, version: "1.0", cycle: "1.X", location: "Desorock Highland", req: "Available in world exploration / NPC interaction", tags: ["tag_v1_0", "tag_v1_x", "tag_region_desorock_highland"] },
               { id: 6037, cat: "huanglong_side", name: "Restart the radar", done: false, astrites: 40, version: "1.0", cycle: "1.X", location: "Jinzhou", req: "Available in world exploration / NPC interaction", chests: 1, chest: true, tags: ["tag_v1_0", "tag_v1_x", "tag_astrites", "tag_region_jinzhou", "tag_chests"] },
-              { id: 6038, cat: "huanglong_side", name: "Save the World? Save the Cat! (Side Quest)", done: false, version: "1.0", cycle: "1.X", location: "Jinzhou", req: "Available in world exploration / NPC interaction", tags: ["tag_v1_0", "tag_v1_x", "tag_region_jinzhou"] },
+              { id: 6038, cat: "huanglong_side", name: "Save the World? Save the Cat! (Side Quest)", done: false, waitTime: "24h real-world daily reset / multi-day cat feeding chain", version: "1.0", cycle: "1.X", location: "Jinzhou", req: "Available in world exploration / NPC interaction", tags: ["tag_v1_0", "tag_v1_x", "tag_region_jinzhou"] },
               { id: 6039, cat: "huanglong_side", name: "Secret Investigation", done: false, astrites: 40, version: "1.0", cycle: "1.X", location: "Jinzhou", req: "Available in world exploration / NPC interaction", chests: 1, chest: true, tags: ["tag_v1_0", "tag_v1_x", "tag_astrites", "tag_chests", "tag_region_jinzhou"] },
               { id: 6040, cat: "huanglong_side", name: "Shooting Party", done: false, version: "1.0", cycle: "1.X", location: "Jinzhou", req: "Available in world exploration / NPC interaction", chests: 1, chest: true, tags: ["tag_v1_0", "tag_v1_x", "tag_chests", "tag_region_jinzhou"] },
               { id: 6041, cat: "huanglong_side", name: "Silver-haired Echo Trainer - I", done: false, version: "1.0", cycle: "1.X", location: "Jinzhou", req: "Available in world exploration / NPC interaction", tags: ["tag_v1_0", "tag_v1_x", "tag_region_jinzhou"] },
@@ -5622,6 +5680,33 @@ complete: {
     let searchQuery = "";
     let activeEditingCatKey = null;
     let questIdToDelete = null;
+
+    /* Auto-Hide Empty Categories setting (Default: true / On) */
+    let autoHideEmptyCategories = localStorage.getItem("wuwa_v2_auto_hide_empty_cats") !== "false";
+
+    function toggleAutoHideEmptyCategories(e) {
+      if (e) {
+        e.stopPropagation();
+        e.preventDefault();
+      }
+      autoHideEmptyCategories = !autoHideEmptyCategories;
+      localStorage.setItem("wuwa_v2_auto_hide_empty_cats", autoHideEmptyCategories ? "true" : "false");
+      syncAutoHideEmptyCategoriesUI();
+      renderApp();
+      showToast(`Auto-Hide Empty Categories: ${autoHideEmptyCategories ? "Enabled" : "Disabled"}`, "⚙️");
+    }
+
+    function syncAutoHideEmptyCategoriesUI() {
+      const btnSidebar = document.getElementById("btnAutoHideEmptyCategories");
+      const textSidebar = document.getElementById("autoHideEmptyCategoriesToggleText");
+      if (btnSidebar) btnSidebar.classList.toggle("active", autoHideEmptyCategories);
+      if (textSidebar) textSidebar.textContent = autoHideEmptyCategories ? "On" : "Off";
+
+      const btnFilter = document.getElementById("btnFilterAutoHideEmptyCats");
+      const textFilter = document.getElementById("filterAutoHideEmptyCatsToggleText");
+      if (btnFilter) btnFilter.classList.toggle("active", autoHideEmptyCategories);
+      if (textFilter) textFilter.textContent = autoHideEmptyCategories ? "On" : "Off";
+    }
 
     // In-memory flags for deletion confirmation bypass (resets on every page load)
     let skipDeleteQuestConfirm = false;
@@ -7174,6 +7259,9 @@ complete: {
                     if (dq.cycle !== undefined) questCopy.cycle = dq.cycle;
                     if (dq.location !== undefined) questCopy.location = dq.location;
                     if (dq.req !== undefined) questCopy.req = dq.req;
+                    if (dq.unionLevel !== undefined) questCopy.unionLevel = dq.unionLevel;
+                    if (dq.waitTime !== undefined) questCopy.waitTime = dq.waitTime;
+                    if (dq.prereqs !== undefined) questCopy.prereqs = dq.prereqs;
                     questCopy.chest = Boolean(dq.chest);
                     questCopy.chests = Number(dq.chests) || 0;
                     if (Array.isArray(dq.tags)) questCopy.tags = [...dq.tags];
@@ -7273,6 +7361,9 @@ complete: {
                 if (dq.cycle !== undefined) questCopy.cycle = dq.cycle;
                 if (dq.location !== undefined) questCopy.location = dq.location;
                 if (dq.req !== undefined) questCopy.req = dq.req;
+                if (dq.unionLevel !== undefined) questCopy.unionLevel = dq.unionLevel;
+                if (dq.waitTime !== undefined) questCopy.waitTime = dq.waitTime;
+                if (dq.prereqs !== undefined) questCopy.prereqs = dq.prereqs;
                 questCopy.chest = Boolean(dq.chest);
                 questCopy.chests = Number(dq.chests) || 0;
                 if (Array.isArray(dq.tags)) questCopy.tags = [...dq.tags];
@@ -9670,11 +9761,18 @@ complete: {
         });
       }
 
-      // 2. Parse from q.req text if available
+      // 2. Direct Union Level in q.unionLevel
+      if (typeof q.unionLevel === "number" && q.unionLevel > 0) {
+        result.unionLevel = q.unionLevel;
+      }
+
+      // 3. Parse from q.req text if available
       if (q.req && typeof q.req === "string") {
-        const ulMatch = q.req.match(/Union\s+Level\s+(\d+)/i);
-        if (ulMatch) {
-          result.unionLevel = parseInt(ulMatch[1], 10);
+        if (!result.unionLevel) {
+          const ulMatch = q.req.match(/Union\s+Level\s+(\d+)/i) || q.req.match(/Union\s+Lv\.?\s*(\d+)/i);
+          if (ulMatch) {
+            result.unionLevel = parseInt(ulMatch[1], 10);
+          }
         }
 
         const quotedMatches = q.req.match(/'([^']+)'|"([^"]+)"/g);
@@ -9729,6 +9827,83 @@ complete: {
       const cycleVal = q.cycle || (verVal.includes(".") ? `${verVal.split(".")[0]}.X` : "1.X");
       if (verEl) verEl.textContent = `v${verVal} (${cycleVal})`;
 
+      // Union Level
+      const ulEl = document.getElementById("questInfoUnionLevel");
+      let unionLevelVal = null;
+      if (typeof q.unionLevel === "number" && q.unionLevel > 0) {
+        unionLevelVal = q.unionLevel;
+      } else if (q.req && typeof q.req === "string") {
+        const ulMatch = q.req.match(/Union\s+Level\s+(\d+)/i) || q.req.match(/Union\s+Lv\.?\s*(\d+)/i);
+        if (ulMatch) unionLevelVal = parseInt(ulMatch[1], 10);
+      }
+      if (!unionLevelVal) {
+        const subTabs = ["main", "tutorial", "companion", "event", "exploration", "side", "daily"];
+        for (const sk of subTabs) {
+          const dq = PRESETS_SCHEMA.complete?.tabs[sk]?.defaultQuests?.find(item => item.id === q.id || item.name.trim().toLowerCase() === q.name.trim().toLowerCase());
+          if (dq) {
+            if (typeof dq.unionLevel === "number" && dq.unionLevel > 0) {
+              unionLevelVal = dq.unionLevel;
+            } else if (dq.req && typeof dq.req === "string") {
+              const ulMatch = dq.req.match(/Union\s+Level\s+(\d+)/i) || dq.req.match(/Union\s+Lv\.?\s*(\d+)/i);
+              if (ulMatch) unionLevelVal = parseInt(ulMatch[1], 10);
+            }
+            break;
+          }
+        }
+      }
+      if (ulEl) {
+        const pillParent = ulEl.closest(".quest-info-meta-pill");
+        if (unionLevelVal && unionLevelVal > 1) {
+          ulEl.textContent = `Lv. ${unionLevelVal}+`;
+          if (pillParent) pillParent.classList.add("highlight-ul");
+        } else {
+          ulEl.textContent = "Lv. 1+";
+          if (pillParent) pillParent.classList.remove("highlight-ul");
+        }
+      }
+
+      // Time Gate
+      const timeGateEl = document.getElementById("questInfoTimeGate");
+      let waitVal = q.waitTime || null;
+      if (!waitVal && q.req && typeof q.req === "string") {
+        if (q.req.toLowerCase().includes("wait 24h") || q.req.toLowerCase().includes("24 hours")) {
+          waitVal = "24h real-world wait between parts";
+        } else if (q.req.toLowerCase().includes("daily reset") || q.req.toLowerCase().includes("04:00 server time")) {
+          waitVal = "Daily reset (04:00 server time)";
+        } else if (q.req.toLowerCase().includes("next day")) {
+          waitVal = "In-game next day";
+        }
+      }
+      if (!waitVal) {
+        const subTabs = ["main", "tutorial", "companion", "event", "exploration", "side", "daily"];
+        for (const sk of subTabs) {
+          const dq = PRESETS_SCHEMA.complete?.tabs[sk]?.defaultQuests?.find(item => item.id === q.id || item.name.trim().toLowerCase() === q.name.trim().toLowerCase());
+          if (dq && dq.waitTime) {
+            waitVal = dq.waitTime;
+            break;
+          }
+        }
+      }
+
+      if (timeGateEl) {
+        const pillParent = timeGateEl.closest(".quest-info-meta-pill");
+        if (waitVal) {
+          let shortGate = "Required";
+          if (waitVal.toLowerCase().includes("24h") || waitVal.toLowerCase().includes("24 hours")) {
+            shortGate = "24h Wait";
+          } else if (waitVal.toLowerCase().includes("daily reset")) {
+            shortGate = "Daily Reset";
+          } else if (waitVal.toLowerCase().includes("in-game") || waitVal.toLowerCase().includes("clock")) {
+            shortGate = "In-Game Time";
+          }
+          timeGateEl.textContent = shortGate;
+          if (pillParent) pillParent.classList.add("highlight-timegate");
+        } else {
+          timeGateEl.textContent = "None";
+          if (pillParent) pillParent.classList.remove("highlight-timegate");
+        }
+      }
+
       // Astrites
       const astritesEl = document.getElementById("questInfoAstrites");
       const astritesCount = Number(q.astrites) || 0;
@@ -9780,7 +9955,6 @@ complete: {
       // Wait Time Section
       const waitSection = document.getElementById("questInfoWaitTimeSection");
       const waitContent = document.getElementById("questInfoWaitTime");
-      const waitVal = q.waitTime || (q.req && q.req.toLowerCase().includes("wait 24h") ? "24h real-world wait between parts" : null);
       if (waitSection && waitContent) {
         if (waitVal) {
           waitSection.style.display = "flex";
@@ -10902,6 +11076,9 @@ complete: {
       const progressPercent = totalDisplayCount ? (completedDisplayCount / totalDisplayCount) * 100 : 0;
       progressBar.style.width = `${progressPercent}%`;
 
+      // Synchronize Auto-Hide Empty Categories UI toggles
+      syncAutoHideEmptyCategoriesUI();
+
       // Sidebar Astrite quests calculation (Explorer preset only)
       const sidebarAstriteCount = document.getElementById("sidebarAstriteCount");
       if (sidebarAstriteCount && activePreset === "complete") {
@@ -11077,7 +11254,7 @@ complete: {
         });
 
         const isCatEmpty = (catQuests.length === 0);
-        if (isCatEmpty) {
+        if (isCatEmpty && autoHideEmptyCategories) {
           collapsedCategories[catKey] = true;
         }
 
@@ -11140,7 +11317,13 @@ complete: {
           });
         }
 
-        if (isFiltering && displayQuests.length === 0) return;
+        // Visibility rules for empty categories:
+        // 1. During search: ALWAYS hide categories with 0 matches (regardless of autoHide setting)
+        // 2. Naturally empty categories: hide only when autoHide is ON
+        // 3. Tag/status filter with 0 matches: hide only when autoHide is ON
+        if (searchQuery && displayQuests.length === 0) return;
+        if (autoHideEmptyCategories && isCatEmpty && !isFiltering) return;
+        if (autoHideEmptyCategories && isFiltering && displayQuests.length === 0) return;
 
         const totalInCat = isFiltering ? displayQuests.length : catQuests.length;
         const completedInCat = (isFiltering ? displayQuests : catQuests).filter(q => q.done).length;
@@ -11212,7 +11395,14 @@ complete: {
         }
 
         const list = card.querySelector(`#list-${catKey}`);
-        displayQuests.forEach(q => list.appendChild(createQuestElement(q, q.categoryIndex, isFiltering || isCustomQuestSorting)));
+        if (displayQuests.length === 0) {
+          const emptyNotice = document.createElement("div");
+          emptyNotice.style.cssText = "padding: 12px 16px; font-size: 0.78rem; color: var(--text-dim); font-style: italic; text-align: center;";
+          emptyNotice.textContent = isCatEmpty ? "No quests in this category." : "No matching quests in this category.";
+          list.appendChild(emptyNotice);
+        } else {
+          displayQuests.forEach(q => list.appendChild(createQuestElement(q, q.categoryIndex, isFiltering || isCustomQuestSorting)));
+        }
         container.appendChild(card);
       });
 
