@@ -4522,7 +4522,7 @@
       <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px;">
         <div style="display: flex; flex-direction: column; gap: 4px; min-width: 0; flex: 1;">
           <h3 id="questInfoTitle" style="font-size: 1.08rem; color: #fff; margin: 0; word-break: break-word; line-height: 1.3;">Quest Name</h3>
-          <span id="questInfoCategory" style="font-size: 0.78rem; color: var(--text-dim);">Category ✦¢ Tab</span>
+          <span id="questInfoCategory" style="font-size: 0.78rem; color: var(--text-dim);">Category • Tab</span>
         </div>
         <button type="button" class="btn-delete-quest" onclick="closeModal('questInfoModal')" style="font-size: 1.1rem; opacity: 0.7;">✕</button>
       </div>
@@ -4540,7 +4540,7 @@
           </div>
           <div class="quest-info-meta-pill">
             <span class="meta-label">Chest Reward</span>
-            <span class="meta-val" id="questInfoChest">No</span>
+            <span class="meta-val" id="questInfoChest">None</span>
           </div>
         </div>
 
@@ -4675,53 +4675,53 @@ complete: {
               frostlands_ch3: { title: "Chapter III: To the Stars Yet to Shine", subtitle: "Roya Frostlands / Lahai-Roi" },
               mengzhou_ch4: { title: "Chapter IV: Rebirth From the Depths", subtitle: "Mengzhou Storyline" }
             },
-            defaultQuests: [              { id: 1001, cat: "prologue", name: "Utterance of Marvels: I", done: false, astrites: 100, version: "1.0", cycle: "1.X", location: "Gorges of Spirits", req: "Starts automatically upon awakening in Solaris-3", chests: 1, chest: true, tags: ["tag_v1_0", "tag_v1_x", "tag_astrites", "tag_region_gorges_of_spirits", "tag_chests"] },
-              { id: 1002, cat: "prologue", name: "Utterance of Marvels: II", done: false, astrites: 100, version: "1.0", cycle: "1.X", location: "Jinzhou", req: "Complete Main Quest 'Utterance of Marvels: I'", chests: 1, chest: true, tags: ["tag_v1_0", "tag_v1_x", "tag_astrites", "tag_region_jinzhou", "tag_chests"] },
-              { id: 1003, cat: "huanglong_ch1", name: "Act I: First Resonance", done: false, astrites: 100, version: "1.0", cycle: "1.X", location: "Jinzhou", req: "Complete Main Quest 'Utterance of Marvels: II'", chests: 1, chest: true, tags: ["tag_v1_0", "tag_v1_x", "tag_astrites", "tag_region_jinzhou", "tag_chests"] },
-              { id: 1004, cat: "huanglong_ch1", name: "Act II: Echoing Marche", done: false, astrites: 100, version: "1.0", cycle: "1.X", location: "Jinzhou", req: "Complete Main Quest 'First Resonance' (Act I)", chests: 1, chest: true, tags: ["tag_v1_0", "tag_v1_x", "tag_astrites", "tag_region_jinzhou", "tag_chests"] },
-              { id: 1005, cat: "huanglong_ch1", name: "Act III: Ominous Star", done: false, astrites: 100, version: "1.0", cycle: "1.X", location: "Jinzhou", req: "Complete Main Quest 'Echoing Marche' (Act II)", chests: 1, chest: true, tags: ["tag_v1_0", "tag_v1_x", "tag_astrites", "tag_region_jinzhou", "tag_chests"] },
-              { id: 1006, cat: "huanglong_ch1", name: "Act IV: Clashing Blades", done: false, astrites: 100, version: "1.0", cycle: "1.X", location: "Jinzhou", req: "Reach Union Level 11 •€¢ Complete Main Quest 'Ominous Star' (Act III)", chests: 2, chest: true, tags: ["tag_v1_0", "tag_v1_x", "tag_astrites", "tag_region_jinzhou", "tag_chests"] },
-              { id: 1007, cat: "huanglong_ch1", name: "Act V: Rewinding Raindrops", done: false, astrites: 100, version: "1.0", cycle: "1.X", location: "Jinzhou •€¢ Tiger's Maw", req: "Reach Union Level 14 •€¢ Complete Main Quest 'Clashing Blades' (Act IV)", chests: 1, chest: true, tags: ["tag_v1_0", "tag_v1_x", "tag_astrites", "tag_region_tigers_maw", "tag_chests"] },
-              { id: 1008, cat: "huanglong_ch1", name: "Act VI: Grand Warstorm", done: false, astrites: 100, version: "1.0", cycle: "1.X", location: "Jinzhou •€¢ Norfall Barrens", req: "Reach Union Level 21 •€¢ Complete Main Quest 'Rewinding Raindrops' (Act V)", chests: 2, chest: true, tags: ["tag_v1_0", "tag_v1_x", "tag_astrites", "tag_region_norfall_barrens", "tag_chests"] },
-              { id: 1009, cat: "huanglong_ch1", name: "Interlude: A New Companion", done: false, astrites: 60, version: "1.0", cycle: "1.X", location: "Jinzhou", req: "Complete Main Quest 'Grand Warstorm' (Act VI)", chests: 1, chest: true, tags: ["tag_v1_1", "tag_v1_x", "tag_astrites", "tag_region_jinzhou", "tag_chests"] },
-              { id: 1010, cat: "huanglong_ch1", name: "Act VII: Thaw of Eons", done: false, astrites: 100, version: "1.1", cycle: "1.X", location: "Mt. Firmament", req: "Reach Union Level 21 •€¢ Complete Main Quest 'Grand Warstorm' / Interlude", chests: 1, chest: true, tags: ["tag_v1_1", "tag_v1_x", "tag_astrites", "tag_region_mt_firmament", "tag_chests"] },
-              { id: 1011, cat: "huanglong_ch1", name: "Act VIII: To the Shore's End", done: false, astrites: 100, version: "1.0", cycle: "1.X", location: "The Black Shores", req: "Complete Main Quest 'Thaw of Eons' (Act VII)", chests: 2, chest: true, tags: ["tag_v1_3", "tag_v1_x", "tag_astrites", "tag_region_black_shores", "tag_chests"] },
-              { id: 1012, cat: "rinascita_ch2", name: "Prologue: Through the Sea Thou Break", done: false, astrites: 100, version: "2.0", cycle: "2.X", location: "The Black Shores •€¢ Tethys' Deep", req: "Complete Main Quest 'To the Shore's End' (Chapter I Act VIII)", chests: 1, chest: true, tags: ["tag_v2_0", "tag_v2_x", "tag_astrites", "tag_region_tethys_deep", "tag_chests"] },
-              { id: 1013, cat: "rinascita_ch2", name: "Act I: The Sacred Breeze So Often Breathes", done: false, astrites: 100, version: "2.0", cycle: "2.X", location: "Rinascita •€¢ Ragunna City", req: "Complete Chapter II Prologue 'Through the Sea Thou Break'", chests: 1, chest: true, tags: ["tag_v2_0", "tag_v2_x", "tag_astrites", "tag_region_ragunna_city", "tag_chests"] },
-              { id: 1014, cat: "rinascita_ch2", name: "Act II: Veils Off in Sun or Shadow", done: false, astrites: 100, version: "2.0", cycle: "2.X", location: "Rinascita •€¢ Ragunna City", req: "Complete Main Quest 'The Sacred Breeze So Often Breathes' (Act I)", chests: 1, chest: true, tags: ["tag_v2_0", "tag_v2_x", "tag_astrites", "tag_region_ragunna_city", "tag_chests"] },
-              { id: 1015, cat: "rinascita_ch2", name: "Act III: What Yesterday Wept, Today Doth Sing", done: false, astrites: 100, version: "2.0", cycle: "2.X", location: "Rinascita •€¢ Ragunna City", req: "Complete Main Quest 'Veils Off in Sun or Shadow' (Act II)", chests: 1, chest: true, tags: ["tag_v2_0", "tag_v2_x", "tag_astrites", "tag_region_ragunna_city", "tag_chests"] },
-              { id: 1016, cat: "rinascita_ch2", name: "Interlude: Old Man and the Whale", done: false, astrites: 60, version: "2.0", cycle: "2.X", location: "Rinascita •€¢ Riccioli Islands", req: "Complete Main Quest 'What Yesterday Wept, Today Doth Sing' (Act III)", chests: 1, chest: true, tags: ["tag_v2_1", "tag_v2_x", "tag_astrites", "tag_region_riccioli_islands", "tag_chests"] },
-              { id: 1017, cat: "rinascita_ch2", name: "Act IV: The Maiden, The Defier, The Death Crier", done: false, astrites: 100, version: "2.2", cycle: "2.X", location: "Rinascita •€¢ Septimont", req: "Complete Main Quest 'What Yesterday Wept, Today Doth Sing' (Act III)", chests: 1, chest: true, tags: ["tag_v2_2", "tag_v2_x", "tag_astrites", "tag_region_septimont", "tag_chests"] },
-              { id: 1018, cat: "rinascita_ch2", name: "Act V: Shadow of Glory", done: false, astrites: 100, version: "2.4", cycle: "2.X", location: "Rinascita •€¢ Septimont", req: "Complete Main Quest 'The Maiden, The Defier, The Death Crier' (Act IV)", chests: 1, chest: true, tags: ["tag_v2_4", "tag_v2_x", "tag_astrites", "tag_region_septimont", "tag_chests"] },
-              { id: 1019, cat: "rinascita_ch2", name: "Act VI: Flames of Heart", done: false, astrites: 100, version: "2.4", cycle: "2.X", location: "Rinascita •€¢ Septimont", req: "Complete Main Quest 'Shadow of Glory' (Act V)", chests: 1, chest: true, tags: ["tag_v2_4", "tag_v2_x", "tag_astrites", "tag_region_septimont", "tag_chests"] },
-              { id: 1020, cat: "rinascita_ch2", name: "Act VII: Dreamcatchers in the Secret Gardens", done: false, astrites: 100, version: "2.5", cycle: "2.X", location: "Rinascita •€¢ Ragunna City", req: "Complete Main Quest 'Flames of Heart' (Act VI)", chests: 1, chest: true, tags: ["tag_v2_5", "tag_v2_x", "tag_astrites", "tag_region_ragunna_city", "tag_chests"] },
-              { id: 1021, cat: "rinascita_ch2", name: "Segue: Rust, Sword and the Sun", done: false, astrites: 60, version: "2.5", cycle: "2.X", location: "Rinascita •€¢ Septimont", req: "Complete Main Quest 'Dreamcatchers in the Secret Gardens' (Act VII)", chests: 1, chest: true, tags: ["tag_v2_5", "tag_v2_x", "tag_astrites", "tag_region_septimont", "tag_chests"] },
-              { id: 1022, cat: "rinascita_ch2", name: "Act VIII: By Sun's Burning Hand", done: false, astrites: 100, version: "2.6", cycle: "2.X", location: "Rinascita •€¢ Septimont", req: "Complete Main Quest 'Dreamcatchers in the Secret Gardens' (Act VII)", chests: 1, chest: true, tags: ["tag_v2_6", "tag_v2_x", "tag_astrites", "tag_region_septimont", "tag_chests"] },
-              { id: 1023, cat: "rinascita_ch2", name: "Act IX: By Moon's Fated Light", done: false, astrites: 100, version: "2.6", cycle: "2.X", location: "Rinascita •€¢ Septimont", req: "Complete Main Quest 'By Sun''s Burning Hand' (Act VIII)", chests: 1, chest: true, tags: ["tag_v2_6", "tag_v2_x", "tag_astrites", "tag_region_septimont", "tag_chests"] },
-              { id: 1024, cat: "rinascita_ch2", name: "Act X: The Bygone Shall Always Return", done: false, astrites: 100, version: "2.7", cycle: "2.X", location: "Rinascita •€¢ Ragunna City", req: "Complete Main Quest 'By Moon''s Fated Light' (Act IX)", chests: 1, chest: true, tags: ["tag_v2_7", "tag_v2_x", "tag_astrites", "tag_region_ragunna_city", "tag_chests"] },
-              { id: 1025, cat: "rinascita_ch2", name: "Act XI: Dawn Breaks on Dark Tides", done: false, astrites: 100, version: "2.7", cycle: "2.X", location: "Rinascita •€¢ Septimont", req: "Complete Main Quest 'The Bygone Shall Always Return' (Act X)", chests: 1, chest: true, tags: ["tag_v2_7", "tag_v2_x", "tag_astrites", "tag_region_septimont", "tag_chests"] },
-              { id: 1026, cat: "rinascita_ch2", name: "Segue: A Stranger in a Strange Land", done: false, astrites: 60, version: "2.7", cycle: "2.X", location: "Rinascita •€¢ Septimont", req: "Complete Main Quest 'Dawn Breaks on Dark Tides' (Act XI)", chests: 1, chest: true, tags: ["tag_v2_7", "tag_v2_x", "tag_astrites", "tag_region_septimont", "tag_chests"] },
-              { id: 1027, cat: "rinascita_ch2", name: "Act XII: Stagnant Dawn on Wastelands", done: false, astrites: 100, version: "2.8", cycle: "2.X", location: "The Black Shores", req: "Complete Main Quest 'Dawn Breaks on Dark Tides' (Act XI)", chests: 1, chest: true, tags: ["tag_v2_8", "tag_v2_x", "tag_astrites", "tag_region_black_shores", "tag_chests"] },
-              { id: 1028, cat: "rinascita_ch2", name: "Segue: Flowing Starlight in the Iris", done: false, astrites: 60, version: "3.0", cycle: "3.X", location: "The Black Shores", req: "Complete Main Quest 'Stagnant Dawn on Wastelands' (Act XII)", chests: 1, chest: true, tags: ["tag_v2_8", "tag_v2_x", "tag_astrites", "tag_region_black_shores", "tag_chests"] },
-              { id: 1029, cat: "frostlands_ch3", name: "Prologue: When the Unknown Thrums", done: false, astrites: 100, version: "3.0", cycle: "3.X", location: "Roya Frostlands", req: "Complete Chapter II Act XII 'Stagnant Dawn on Wastelands'", chests: 1, chest: true, tags: ["tag_v3_0", "tag_v3_x", "tag_astrites", "tag_region_frostlands", "tag_chests"] },
-              { id: 1030, cat: "frostlands_ch3", name: "Act I: What Burns Beneath Frostlands", done: false, astrites: 100, version: "3.0", cycle: "3.X", location: "Roya Frostlands", req: "Complete Chapter III Prologue 'When the Unknown Thrums'", chests: 1, chest: true, tags: ["tag_v3_0", "tag_v3_x", "tag_astrites", "tag_region_frostlands", "tag_chests"] },
-              { id: 1031, cat: "frostlands_ch3", name: "Act II: Ode to the Second Sunrise", done: false, astrites: 100, version: "3.0", cycle: "3.X", location: "Roya Frostlands", req: "Complete Main Quest 'What Burns Beneath Frostlands' (Act I)", chests: 1, chest: true, tags: ["tag_v3_0", "tag_v3_x", "tag_astrites", "tag_region_frostlands", "tag_chests"] },
-              { id: 1032, cat: "frostlands_ch3", name: "Act III: The Star That Voyages Far", done: false, astrites: 100, version: "3.1", cycle: "3.X", location: "Roya Frostlands", req: "Complete Main Quest 'Ode to the Second Sunrise' (Act II)", chests: 1, chest: true, tags: ["tag_v3_1", "tag_v3_x", "tag_astrites", "tag_region_frostlands", "tag_chests"] },
-              { id: 1033, cat: "frostlands_ch3", name: "Segue: All That Sunlight Touches", done: false, astrites: 60, version: "3.1", cycle: "3.X", location: "Roya Frostlands", req: "Complete Main Quest 'The Star That Voyages Far' (Act III)", chests: 1, chest: true, tags: ["tag_v3_1", "tag_v3_x", "tag_astrites", "tag_region_frostlands", "tag_chests"] },
-              { id: 1034, cat: "frostlands_ch3", name: "Act IV: Gold Suspended in Shadows", done: false, astrites: 100, version: "3.2", cycle: "3.X", location: "Roya Frostlands", req: "Complete Main Quest 'The Star That Voyages Far' (Act III)", chests: 1, chest: true, tags: ["tag_v3_2", "tag_v3_x", "tag_astrites", "tag_region_frostlands", "tag_chests"] },
-              { id: 1035, cat: "frostlands_ch3", name: "Segue: Rabbit Reflected in Shades", done: false, astrites: 60, version: "3.2", cycle: "3.X", location: "Roya Frostlands", req: "Complete Main Quest 'Gold Suspended in Shadows' (Act IV)", chests: 1, chest: true, tags: ["tag_v3_2", "tag_v3_x", "tag_astrites", "tag_region_frostlands", "tag_chests"] },
-              { id: 1036, cat: "frostlands_ch3", name: "Segue: The Flaming Red from Tomorrow", done: false, astrites: 60, version: "3.2", cycle: "3.X", location: "Roya Frostlands", req: "Complete Main Quest 'Gold Suspended in Shadows' (Act IV)", chests: 1, chest: true, tags: ["tag_v3_2", "tag_v3_x", "tag_astrites", "tag_region_frostlands", "tag_chests"] },
-              { id: 1037, cat: "frostlands_ch3", name: "Segue: Wishes in the Bell", done: false, astrites: 60, version: "3.3", cycle: "3.X", location: "Roya Frostlands", req: "Complete Main Quest 'Gold Suspended in Shadows' (Act IV)", chests: 1, chest: true, tags: ["tag_v3_3", "tag_v3_x", "tag_astrites", "tag_region_frostlands", "tag_chests"] },
-              { id: 1038, cat: "frostlands_ch3", name: "Act V: Starlights from Yesterdays", done: false, astrites: 100, version: "3.3", cycle: "3.X", location: "Roya Frostlands •€¢ Solisia Landing", req: "Complete Main Quest 'Gold Suspended in Shadows' (Act IV)", chests: 1, chest: true, tags: ["tag_v3_3", "tag_v3_x", "tag_astrites", "tag_region_solisia_landing", "tag_chests"] },
-              { id: 1039, cat: "frostlands_ch3", name: "Segue: Wishes in the Bell: Epilogue", done: false, astrites: 60, version: "3.3", cycle: "3.X", location: "Roya Frostlands", req: "Complete Main Quest 'Starlights from Yesterdays' (Act V)", chests: 1, chest: true, tags: ["tag_v3_3", "tag_v3_x", "tag_astrites", "tag_region_frostlands", "tag_chests"] },
-              { id: 1040, cat: "frostlands_ch3", name: "Segue: Beneath a Melting Night Sky", done: false, astrites: 60, version: "3.3", cycle: "3.X", location: "Roya Frostlands", req: "Complete Main Quest 'Starlights from Yesterdays' (Act V)", chests: 1, chest: true, tags: ["tag_v3_3", "tag_v3_x", "tag_astrites", "tag_region_frostlands", "tag_chests"] },
-              { id: 1041, cat: "frostlands_ch3", name: "Side Story: At Dream's Edge (Cyberpunk: Edgerunners Collaboration)", done: false, astrites: 60, version: "3.4", cycle: "3.X", location: "Roya Frostlands", req: "Complete Main Quest 'Starlights from Yesterdays' (Act V) •€¢ Cyberpunk Collab", chests: 1, chest: true, tags: ["tag_v3_4", "tag_v3_x", "tag_astrites", "tag_region_frostlands", "tag_chests"] },
-              { id: 1042, cat: "frostlands_ch3", name: "Segue: We Choose the Sky", done: false, astrites: 60, version: "3.4", cycle: "3.X", location: "Roya Frostlands", req: "Complete Main Quest 'Starlights from Yesterdays' (Act V)", chests: 1, chest: true, tags: ["tag_v3_4", "tag_v3_x", "tag_astrites", "tag_region_frostlands", "tag_chests"] },
-              { id: 1043, cat: "mengzhou_ch4", name: "Act I: The Wind Before the Storm", done: false, astrites: 100, version: "3.5", cycle: "3.X", location: "Mengzhou •€¢ WavesLine", req: "Complete Main Quest 'Starlights from Yesterdays' (Act V)", chests: 1, chest: true, tags: ["tag_v3_5", "tag_v3_x", "tag_astrites", "tag_region_mengzhou", "tag_chests"] },
-              { id: 1044, cat: "mengzhou_ch4", name: "Act II: Xuanling Sings, Storm Quelled", done: false, astrites: 100, version: "3.5", cycle: "3.X", location: "Mengzhou", req: "Complete Main Quest 'The Wind Before the Storm' (Act I)", chests: 1, chest: true, tags: ["tag_v3_5", "tag_v3_x", "tag_astrites", "tag_region_mengzhou", "tag_chests"] },
-              { id: 1045, cat: "mengzhou_ch4", name: "Segue: The Chant of Unseen Ties", done: false, astrites: 60, version: "3.5", cycle: "3.X", location: "Mengzhou", req: "Complete Main Quest 'Xuanling Sings, Storm Quelled' (Act II)", chests: 1, chest: true, tags: ["tag_v3_5", "tag_v3_x", "tag_astrites", "tag_region_mengzhou", "tag_chests"] },
-              { id: 1046, cat: "mengzhou_ch4", name: "Act III: Song of the Heart Sword", done: false, astrites: 100, version: "3.5", cycle: "3.X", location: "Mengzhou", req: "Complete Main Quest 'Xuanling Sings, Storm Quelled' (Act II)", chests: 1, chest: true, tags: ["tag_v3_5", "tag_v3_x", "tag_astrites", "tag_region_mengzhou", "tag_chests"] },
-              { id: 1047, cat: "mengzhou_ch4", name: "Segue: The Nethermancer's Requiem", done: false, astrites: 60, version: "3.5", cycle: "3.X", location: "Mengzhou", req: "Complete Main Quest 'Song of the Heart Sword' (Act III)", chests: 1, chest: true, tags: ["tag_v3_5", "tag_v3_x", "tag_astrites", "tag_region_mengzhou", "tag_chests"] }
+            defaultQuests: [              { id: 1001, cat: "prologue", name: "Utterance of Marvels: I", done: false, astrites: 100, version: "1.0", cycle: "1.X", location: "Gorges of Spirits", req: "Starts automatically upon awakening in Solaris-3", tags: ["tag_v1_0", "tag_v1_x", "tag_astrites", "tag_region_gorges_of_spirits"] },
+              { id: 1002, cat: "prologue", name: "Utterance of Marvels: II", done: false, astrites: 100, version: "1.0", cycle: "1.X", location: "Jinzhou", req: "Complete Main Quest 'Utterance of Marvels: I'", tags: ["tag_v1_0", "tag_v1_x", "tag_astrites", "tag_region_jinzhou"] },
+              { id: 1003, cat: "huanglong_ch1", name: "Act I: First Resonance", done: false, astrites: 100, version: "1.0", cycle: "1.X", location: "Jinzhou", req: "Complete Main Quest 'Utterance of Marvels: II'", tags: ["tag_v1_0", "tag_v1_x", "tag_astrites", "tag_region_jinzhou"] },
+              { id: 1004, cat: "huanglong_ch1", name: "Act II: Echoing Marche", done: false, astrites: 100, version: "1.0", cycle: "1.X", location: "Jinzhou", req: "Complete Main Quest 'First Resonance' (Act I)", tags: ["tag_v1_0", "tag_v1_x", "tag_astrites", "tag_region_jinzhou"] },
+              { id: 1005, cat: "huanglong_ch1", name: "Act III: Ominous Star", done: false, astrites: 100, version: "1.0", cycle: "1.X", location: "Jinzhou", req: "Complete Main Quest 'Echoing Marche' (Act II)", tags: ["tag_v1_0", "tag_v1_x", "tag_astrites", "tag_region_jinzhou"] },
+              { id: 1006, cat: "huanglong_ch1", name: "Act IV: Clashing Blades", done: false, astrites: 100, version: "1.0", cycle: "1.X", location: "Jinzhou", req: "Reach Union Level 11 •€¢ Complete Main Quest 'Ominous Star' (Act III)", tags: ["tag_v1_0", "tag_v1_x", "tag_astrites", "tag_region_jinzhou"] },
+              { id: 1007, cat: "huanglong_ch1", name: "Act V: Rewinding Raindrops", done: false, astrites: 100, version: "1.0", cycle: "1.X", location: "Jinzhou •€¢ Tiger's Maw", req: "Reach Union Level 14 •€¢ Complete Main Quest 'Clashing Blades' (Act IV)", tags: ["tag_v1_0", "tag_v1_x", "tag_astrites", "tag_region_tigers_maw"] },
+              { id: 1008, cat: "huanglong_ch1", name: "Act VI: Grand Warstorm", done: false, astrites: 100, version: "1.0", cycle: "1.X", location: "Jinzhou •€¢ Norfall Barrens", req: "Reach Union Level 21 •€¢ Complete Main Quest 'Rewinding Raindrops' (Act V)", tags: ["tag_v1_0", "tag_v1_x", "tag_astrites", "tag_region_norfall_barrens"] },
+              { id: 1009, cat: "huanglong_ch1", name: "Interlude: A New Companion", done: false, astrites: 60, version: "1.0", cycle: "1.X", location: "Jinzhou", req: "Complete Main Quest 'Grand Warstorm' (Act VI)", tags: ["tag_v1_1", "tag_v1_x", "tag_astrites", "tag_region_jinzhou"] },
+              { id: 1010, cat: "huanglong_ch1", name: "Act VII: Thaw of Eons", done: false, astrites: 100, version: "1.1", cycle: "1.X", location: "Mt. Firmament", req: "Reach Union Level 21 •€¢ Complete Main Quest 'Grand Warstorm' / Interlude", tags: ["tag_v1_1", "tag_v1_x", "tag_astrites", "tag_region_mt_firmament"] },
+              { id: 1011, cat: "huanglong_ch1", name: "Act VIII: To the Shore's End", done: false, astrites: 100, version: "1.0", cycle: "1.X", location: "The Black Shores", req: "Complete Main Quest 'Thaw of Eons' (Act VII)", tags: ["tag_v1_3", "tag_v1_x", "tag_astrites", "tag_region_black_shores"] },
+              { id: 1012, cat: "rinascita_ch2", name: "Prologue: Through the Sea Thou Break", done: false, astrites: 100, version: "2.0", cycle: "2.X", location: "The Black Shores •€¢ Tethys' Deep", req: "Complete Main Quest 'To the Shore's End' (Chapter I Act VIII)", tags: ["tag_v2_0", "tag_v2_x", "tag_astrites", "tag_region_tethys_deep"] },
+              { id: 1013, cat: "rinascita_ch2", name: "Act I: The Sacred Breeze So Often Breathes", done: false, astrites: 100, version: "2.0", cycle: "2.X", location: "Rinascita •€¢ Ragunna City", req: "Complete Chapter II Prologue 'Through the Sea Thou Break'", tags: ["tag_v2_0", "tag_v2_x", "tag_astrites", "tag_region_ragunna_city"] },
+              { id: 1014, cat: "rinascita_ch2", name: "Act II: Veils Off in Sun or Shadow", done: false, astrites: 100, version: "2.0", cycle: "2.X", location: "Rinascita •€¢ Ragunna City", req: "Complete Main Quest 'The Sacred Breeze So Often Breathes' (Act I)", tags: ["tag_v2_0", "tag_v2_x", "tag_astrites", "tag_region_ragunna_city"] },
+              { id: 1015, cat: "rinascita_ch2", name: "Act III: What Yesterday Wept, Today Doth Sing", done: false, astrites: 100, version: "2.0", cycle: "2.X", location: "Rinascita •€¢ Ragunna City", req: "Complete Main Quest 'Veils Off in Sun or Shadow' (Act II)", tags: ["tag_v2_0", "tag_v2_x", "tag_astrites", "tag_region_ragunna_city"] },
+              { id: 1016, cat: "rinascita_ch2", name: "Interlude: Old Man and the Whale", done: false, astrites: 60, version: "2.0", cycle: "2.X", location: "Rinascita •€¢ Riccioli Islands", req: "Complete Main Quest 'What Yesterday Wept, Today Doth Sing' (Act III)", tags: ["tag_v2_1", "tag_v2_x", "tag_astrites", "tag_region_riccioli_islands"] },
+              { id: 1017, cat: "rinascita_ch2", name: "Act IV: The Maiden, The Defier, The Death Crier", done: false, astrites: 100, version: "2.2", cycle: "2.X", location: "Rinascita •€¢ Septimont", req: "Complete Main Quest 'What Yesterday Wept, Today Doth Sing' (Act III)", tags: ["tag_v2_2", "tag_v2_x", "tag_astrites", "tag_region_septimont"] },
+              { id: 1018, cat: "rinascita_ch2", name: "Act V: Shadow of Glory", done: false, astrites: 100, version: "2.4", cycle: "2.X", location: "Rinascita •€¢ Septimont", req: "Complete Main Quest 'The Maiden, The Defier, The Death Crier' (Act IV)", tags: ["tag_v2_4", "tag_v2_x", "tag_astrites", "tag_region_septimont"] },
+              { id: 1019, cat: "rinascita_ch2", name: "Act VI: Flames of Heart", done: false, astrites: 100, version: "2.4", cycle: "2.X", location: "Rinascita •€¢ Septimont", req: "Complete Main Quest 'Shadow of Glory' (Act V)", tags: ["tag_v2_4", "tag_v2_x", "tag_astrites", "tag_region_septimont"] },
+              { id: 1020, cat: "rinascita_ch2", name: "Act VII: Dreamcatchers in the Secret Gardens", done: false, astrites: 100, version: "2.5", cycle: "2.X", location: "Rinascita •€¢ Ragunna City", req: "Complete Main Quest 'Flames of Heart' (Act VI)", tags: ["tag_v2_5", "tag_v2_x", "tag_astrites", "tag_region_ragunna_city"] },
+              { id: 1021, cat: "rinascita_ch2", name: "Segue: Rust, Sword and the Sun", done: false, astrites: 60, version: "2.5", cycle: "2.X", location: "Rinascita •€¢ Septimont", req: "Complete Main Quest 'Dreamcatchers in the Secret Gardens' (Act VII)", tags: ["tag_v2_5", "tag_v2_x", "tag_astrites", "tag_region_septimont"] },
+              { id: 1022, cat: "rinascita_ch2", name: "Act VIII: By Sun's Burning Hand", done: false, astrites: 100, version: "2.6", cycle: "2.X", location: "Rinascita •€¢ Septimont", req: "Complete Main Quest 'Dreamcatchers in the Secret Gardens' (Act VII)", tags: ["tag_v2_6", "tag_v2_x", "tag_astrites", "tag_region_septimont"] },
+              { id: 1023, cat: "rinascita_ch2", name: "Act IX: By Moon's Fated Light", done: false, astrites: 100, version: "2.6", cycle: "2.X", location: "Rinascita •€¢ Septimont", req: "Complete Main Quest 'By Sun''s Burning Hand' (Act VIII)", tags: ["tag_v2_6", "tag_v2_x", "tag_astrites", "tag_region_septimont"] },
+              { id: 1024, cat: "rinascita_ch2", name: "Act X: The Bygone Shall Always Return", done: false, astrites: 100, version: "2.7", cycle: "2.X", location: "Rinascita •€¢ Ragunna City", req: "Complete Main Quest 'By Moon''s Fated Light' (Act IX)", tags: ["tag_v2_7", "tag_v2_x", "tag_astrites", "tag_region_ragunna_city"] },
+              { id: 1025, cat: "rinascita_ch2", name: "Act XI: Dawn Breaks on Dark Tides", done: false, astrites: 100, version: "2.7", cycle: "2.X", location: "Rinascita •€¢ Septimont", req: "Complete Main Quest 'The Bygone Shall Always Return' (Act X)", tags: ["tag_v2_7", "tag_v2_x", "tag_astrites", "tag_region_septimont"] },
+              { id: 1026, cat: "rinascita_ch2", name: "Segue: A Stranger in a Strange Land", done: false, astrites: 60, version: "2.7", cycle: "2.X", location: "Rinascita •€¢ Septimont", req: "Complete Main Quest 'Dawn Breaks on Dark Tides' (Act XI)", tags: ["tag_v2_7", "tag_v2_x", "tag_astrites", "tag_region_septimont"] },
+              { id: 1027, cat: "rinascita_ch2", name: "Act XII: Stagnant Dawn on Wastelands", done: false, astrites: 100, version: "2.8", cycle: "2.X", location: "The Black Shores", req: "Complete Main Quest 'Dawn Breaks on Dark Tides' (Act XI)", tags: ["tag_v2_8", "tag_v2_x", "tag_astrites", "tag_region_black_shores"] },
+              { id: 1028, cat: "rinascita_ch2", name: "Segue: Flowing Starlight in the Iris", done: false, astrites: 60, version: "3.0", cycle: "3.X", location: "The Black Shores", req: "Complete Main Quest 'Stagnant Dawn on Wastelands' (Act XII)", tags: ["tag_v2_8", "tag_v2_x", "tag_astrites", "tag_region_black_shores"] },
+              { id: 1029, cat: "frostlands_ch3", name: "Prologue: When the Unknown Thrums", done: false, astrites: 100, version: "3.0", cycle: "3.X", location: "Roya Frostlands", req: "Complete Chapter II Act XII 'Stagnant Dawn on Wastelands'", tags: ["tag_v3_0", "tag_v3_x", "tag_astrites", "tag_region_frostlands"] },
+              { id: 1030, cat: "frostlands_ch3", name: "Act I: What Burns Beneath Frostlands", done: false, astrites: 100, version: "3.0", cycle: "3.X", location: "Roya Frostlands", req: "Complete Chapter III Prologue 'When the Unknown Thrums'", tags: ["tag_v3_0", "tag_v3_x", "tag_astrites", "tag_region_frostlands"] },
+              { id: 1031, cat: "frostlands_ch3", name: "Act II: Ode to the Second Sunrise", done: false, astrites: 100, version: "3.0", cycle: "3.X", location: "Roya Frostlands", req: "Complete Main Quest 'What Burns Beneath Frostlands' (Act I)", tags: ["tag_v3_0", "tag_v3_x", "tag_astrites", "tag_region_frostlands"] },
+              { id: 1032, cat: "frostlands_ch3", name: "Act III: The Star That Voyages Far", done: false, astrites: 100, version: "3.1", cycle: "3.X", location: "Roya Frostlands", req: "Complete Main Quest 'Ode to the Second Sunrise' (Act II)", tags: ["tag_v3_1", "tag_v3_x", "tag_astrites", "tag_region_frostlands"] },
+              { id: 1033, cat: "frostlands_ch3", name: "Segue: All That Sunlight Touches", done: false, astrites: 60, version: "3.1", cycle: "3.X", location: "Roya Frostlands", req: "Complete Main Quest 'The Star That Voyages Far' (Act III)", tags: ["tag_v3_1", "tag_v3_x", "tag_astrites", "tag_region_frostlands"] },
+              { id: 1034, cat: "frostlands_ch3", name: "Act IV: Gold Suspended in Shadows", done: false, astrites: 100, version: "3.2", cycle: "3.X", location: "Roya Frostlands", req: "Complete Main Quest 'The Star That Voyages Far' (Act III)", tags: ["tag_v3_2", "tag_v3_x", "tag_astrites", "tag_region_frostlands"] },
+              { id: 1035, cat: "frostlands_ch3", name: "Segue: Rabbit Reflected in Shades", done: false, astrites: 60, version: "3.2", cycle: "3.X", location: "Roya Frostlands", req: "Complete Main Quest 'Gold Suspended in Shadows' (Act IV)", tags: ["tag_v3_2", "tag_v3_x", "tag_astrites", "tag_region_frostlands"] },
+              { id: 1036, cat: "frostlands_ch3", name: "Segue: The Flaming Red from Tomorrow", done: false, astrites: 60, version: "3.2", cycle: "3.X", location: "Roya Frostlands", req: "Complete Main Quest 'Gold Suspended in Shadows' (Act IV)", tags: ["tag_v3_2", "tag_v3_x", "tag_astrites", "tag_region_frostlands"] },
+              { id: 1037, cat: "frostlands_ch3", name: "Segue: Wishes in the Bell", done: false, astrites: 60, version: "3.3", cycle: "3.X", location: "Roya Frostlands", req: "Complete Main Quest 'Gold Suspended in Shadows' (Act IV)", tags: ["tag_v3_3", "tag_v3_x", "tag_astrites", "tag_region_frostlands"] },
+              { id: 1038, cat: "frostlands_ch3", name: "Act V: Starlights from Yesterdays", done: false, astrites: 100, version: "3.3", cycle: "3.X", location: "Roya Frostlands •€¢ Solisia Landing", req: "Complete Main Quest 'Gold Suspended in Shadows' (Act IV)", tags: ["tag_v3_3", "tag_v3_x", "tag_astrites", "tag_region_solisia_landing"] },
+              { id: 1039, cat: "frostlands_ch3", name: "Segue: Wishes in the Bell: Epilogue", done: false, astrites: 60, version: "3.3", cycle: "3.X", location: "Roya Frostlands", req: "Complete Main Quest 'Starlights from Yesterdays' (Act V)", tags: ["tag_v3_3", "tag_v3_x", "tag_astrites", "tag_region_frostlands"] },
+              { id: 1040, cat: "frostlands_ch3", name: "Segue: Beneath a Melting Night Sky", done: false, astrites: 60, version: "3.3", cycle: "3.X", location: "Roya Frostlands", req: "Complete Main Quest 'Starlights from Yesterdays' (Act V)", tags: ["tag_v3_3", "tag_v3_x", "tag_astrites", "tag_region_frostlands"] },
+              { id: 1041, cat: "frostlands_ch3", name: "Side Story: At Dream's Edge (Cyberpunk: Edgerunners Collaboration)", done: false, astrites: 60, version: "3.4", cycle: "3.X", location: "Roya Frostlands", req: "Complete Main Quest 'Starlights from Yesterdays' (Act V) •€¢ Cyberpunk Collab", tags: ["tag_v3_4", "tag_v3_x", "tag_astrites", "tag_region_frostlands"] },
+              { id: 1042, cat: "frostlands_ch3", name: "Segue: We Choose the Sky", done: false, astrites: 60, version: "3.4", cycle: "3.X", location: "Roya Frostlands", req: "Complete Main Quest 'Starlights from Yesterdays' (Act V)", tags: ["tag_v3_4", "tag_v3_x", "tag_astrites", "tag_region_frostlands"] },
+              { id: 1043, cat: "mengzhou_ch4", name: "Act I: The Wind Before the Storm", done: false, astrites: 100, version: "3.5", cycle: "3.X", location: "Mengzhou •€¢ WavesLine", req: "Complete Main Quest 'Starlights from Yesterdays' (Act V)", tags: ["tag_v3_5", "tag_v3_x", "tag_astrites", "tag_region_mengzhou"] },
+              { id: 1044, cat: "mengzhou_ch4", name: "Act II: Xuanling Sings, Storm Quelled", done: false, astrites: 100, version: "3.5", cycle: "3.X", location: "Mengzhou", req: "Complete Main Quest 'The Wind Before the Storm' (Act I)", tags: ["tag_v3_5", "tag_v3_x", "tag_astrites", "tag_region_mengzhou"] },
+              { id: 1045, cat: "mengzhou_ch4", name: "Segue: The Chant of Unseen Ties", done: false, astrites: 60, version: "3.5", cycle: "3.X", location: "Mengzhou", req: "Complete Main Quest 'Xuanling Sings, Storm Quelled' (Act II)", tags: ["tag_v3_5", "tag_v3_x", "tag_astrites", "tag_region_mengzhou"] },
+              { id: 1046, cat: "mengzhou_ch4", name: "Act III: Song of the Heart Sword", done: false, astrites: 100, version: "3.5", cycle: "3.X", location: "Mengzhou", req: "Complete Main Quest 'Xuanling Sings, Storm Quelled' (Act II)", tags: ["tag_v3_5", "tag_v3_x", "tag_astrites", "tag_region_mengzhou"] },
+              { id: 1047, cat: "mengzhou_ch4", name: "Segue: The Nethermancer's Requiem", done: false, astrites: 60, version: "3.5", cycle: "3.X", location: "Mengzhou", req: "Complete Main Quest 'Song of the Heart Sword' (Act III)", tags: ["tag_v3_5", "tag_v3_x", "tag_astrites", "tag_region_mengzhou"] }
             ]
           },
           tutorial: {
@@ -4736,19 +4736,19 @@ complete: {
               { id: 2002, cat: "standard_tutorials", name: "Dream Patrol I", done: false, version: "2.0", cycle: "2.X", location: "Ragunna City", req: "Unlock Averardo Bank", tags: ["tag_v2_0", "tag_v2_x", "tag_region_ragunna_city"] },
               { id: 2003, cat: "standard_tutorials", name: "Dream Patrol II", done: false, version: "2.0", cycle: "2.X", location: "Ragunna City", req: "Unlock Averardo Bank", tags: ["tag_v2_0", "tag_v2_x", "tag_region_ragunna_city"] },
               { id: 2004, cat: "standard_tutorials", name: "Dream Patrol: Finale", done: false, version: "2.0", cycle: "2.X", location: "Jinzhou", req: "Defeat all Nightmare Echo. Previous Quest(s): Dream Patrol II", tags: ["tag_v2_0", "tag_v2_x", "tag_region_jinzhou"] },
-              { id: 2005, cat: "standard_tutorials", name: "First Trial", done: false, astrites: 20, version: "1.0", cycle: "1.X", location: "Jinzhou", req: "Reach Union Lv. 18", chests: 1, chest: true, tags: ["tag_v1_0", "tag_v1_x", "tag_astrites", "tag_region_jinzhou"] },
-              { id: 2006, cat: "standard_tutorials", name: "Honorary Chef: Taste of Memories", done: false, astrites: 20, version: "1.0", cycle: "1.X", location: "Jinzhou", req: "Available in world exploration / NPC interaction", chests: 1, chest: true, tags: ["tag_v1_0", "tag_v1_x", "tag_astrites", "tag_region_jinzhou"] },
+              { id: 2005, cat: "standard_tutorials", name: "First Trial", done: false, astrites: 20, version: "1.0", cycle: "1.X", location: "Jinzhou", req: "Reach Union Lv. 18", tags: ["tag_v1_0", "tag_v1_x", "tag_astrites", "tag_region_jinzhou"] },
+              { id: 2006, cat: "standard_tutorials", name: "Honorary Chef: Taste of Memories", done: false, astrites: 20, version: "1.0", cycle: "1.X", location: "Jinzhou", req: "Available in world exploration / NPC interaction", tags: ["tag_v1_0", "tag_v1_x", "tag_astrites", "tag_region_jinzhou"] },
               { id: 2007, cat: "standard_tutorials", name: "Into the Battle Simulation!", done: false, version: "3.0", cycle: "3.X", location: "Jinzhou", req: "Available in world exploration / NPC interaction", tags: ["tag_v3_0", "tag_v3_x", "tag_region_jinzhou"] },
-              { id: 2008, cat: "standard_tutorials", name: "La La Echo", done: false, astrites: 20, version: "2.0", cycle: "2.X", location: "Jinzhou", req: "Available in world exploration / NPC interaction", chests: 1, chest: true, tags: ["tag_v2_0", "tag_v2_x", "tag_astrites", "tag_region_jinzhou"] },
-              { id: 2009, cat: "standard_tutorials", name: "Ocean Is a Soul's Rest", done: false, astrites: 20, version: "2.1", cycle: "2.X", location: "Jinzhou", req: "Reach Union Level 30.", chests: 1, chest: true, tags: ["tag_v2_1", "tag_v2_x", "tag_astrites", "tag_region_jinzhou"] },
-              { id: 2010, cat: "standard_tutorials", name: "Pedestal Device", done: false, astrites: 20, version: "1.0", cycle: "1.X", location: "Jinzhou", req: "Reach Union Lv. 27", chests: 1, chest: true, tags: ["tag_v1_0", "tag_v1_x", "tag_astrites", "tag_region_jinzhou"] },
-              { id: 2011, cat: "standard_tutorials", name: "Plushie Expedition Squad", done: false, astrites: 20, version: "2.4", cycle: "2.X", location: "Collect any Sonance Casket in Septimont .", req: "Available in world exploration / NPC interaction", chests: 1, chest: true, tags: ["tag_v2_4", "tag_v2_x", "tag_astrites", "tag_region_septimont"] },
+              { id: 2008, cat: "standard_tutorials", name: "La La Echo", done: false, astrites: 20, version: "2.0", cycle: "2.X", location: "Jinzhou", req: "Available in world exploration / NPC interaction", tags: ["tag_v2_0", "tag_v2_x", "tag_astrites", "tag_region_jinzhou"] },
+              { id: 2009, cat: "standard_tutorials", name: "Ocean Is a Soul's Rest", done: false, astrites: 20, version: "2.1", cycle: "2.X", location: "Jinzhou", req: "Reach Union Level 30.", tags: ["tag_v2_1", "tag_v2_x", "tag_astrites", "tag_region_jinzhou"] },
+              { id: 2010, cat: "standard_tutorials", name: "Pedestal Device", done: false, astrites: 20, version: "1.0", cycle: "1.X", location: "Jinzhou", req: "Reach Union Lv. 27", tags: ["tag_v1_0", "tag_v1_x", "tag_astrites", "tag_region_jinzhou"] },
+              { id: 2011, cat: "standard_tutorials", name: "Plushie Expedition Squad", done: false, astrites: 20, version: "2.4", cycle: "2.X", location: "Collect any Sonance Casket in Septimont .", req: "Available in world exploration / NPC interaction", tags: ["tag_v2_4", "tag_v2_x", "tag_astrites", "tag_region_septimont"] },
               { id: 2012, cat: "standard_tutorials", name: "Purify the Tapes of Last Words", done: false, version: "3.0", cycle: "3.X", location: "Lahai-Roi", req: "Pick up a Tape of Last Words", tags: ["tag_v3_0", "tag_v3_x", "tag_region_frostlands"] },
-              { id: 2013, cat: "standard_tutorials", name: "Remnants of the Past Days", done: false, astrites: 20, version: "1.0", cycle: "1.X", location: "Jinzhou", req: "Pick up a Sonance Casket", chests: 1, chest: true, tags: ["tag_v1_0", "tag_v1_x", "tag_astrites", "tag_region_jinzhou"] },
+              { id: 2013, cat: "standard_tutorials", name: "Remnants of the Past Days", done: false, astrites: 20, version: "1.0", cycle: "1.X", location: "Jinzhou", req: "Pick up a Sonance Casket", tags: ["tag_v1_0", "tag_v1_x", "tag_astrites", "tag_region_jinzhou"] },
               { id: 2014, cat: "standard_tutorials", name: "SOL3 Phase Ascension: Phase I", done: false, version: "1.0", cycle: "1.X", location: "Jinzhou", req: "Reach Union Level 20", tags: ["tag_v1_0", "tag_v1_x", "tag_region_jinzhou"] },
               { id: 2015, cat: "standard_tutorials", name: "SOL3 Phase Ascension: Phase II", done: false, version: "1.0", cycle: "1.X", location: "Jinzhou", req: "Reach Union Level 20", tags: ["tag_v1_0", "tag_v1_x", "tag_region_jinzhou"] },
               { id: 2016, cat: "standard_tutorials", name: "SOL3 Phase Ascension: Phase III", done: false, version: "1.0", cycle: "1.X", location: "Jinzhou", req: "Reach Union Level 20", tags: ["tag_v1_0", "tag_v1_x", "tag_region_jinzhou"] },
-              { id: 2017, cat: "standard_tutorials", name: "The Plushie Village", done: false, astrites: 20, version: "2.0", cycle: "2.X", location: "Jinzhou", req: "Available in world exploration / NPC interaction", chests: 1, chest: true, tags: ["tag_v2_0", "tag_v2_x", "tag_astrites", "tag_region_jinzhou"] },
+              { id: 2017, cat: "standard_tutorials", name: "The Plushie Village", done: false, astrites: 20, version: "2.0", cycle: "2.X", location: "Jinzhou", req: "Available in world exploration / NPC interaction", tags: ["tag_v2_0", "tag_v2_x", "tag_astrites", "tag_region_jinzhou"] },
               { id: 2018, cat: "standard_tutorials", name: "When Colors Fade", done: false, version: "2.0", cycle: "2.X", location: "Jinzhou", req: "Complete any Overflowing Palette challenge.", tags: ["tag_v2_0", "tag_v2_x", "tag_region_jinzhou"] },
               { id: 2019, cat: "event_tutorials", name: "Banners Never Fall", done: false, version: "2.4", cycle: "2.X", location: "Jinzhou", req: "Reach Union Level 14 •€¢ Reach the Bell Tower during Main Quest Chapter II Act VI \" Flames of Heart .\"", tags: ["tag_v2_4", "tag_v2_x", "tag_region_jinzhou"] },
               { id: 2020, cat: "event_tutorials", name: "Farewell! Let's Overdash!", done: false, version: "1.0", cycle: "1.X", location: "Jinzhou", req: "Finish Overdash Club event. Previous Quest(s): Get Ready! Let's Overdash!", tags: ["tag_v1_0", "tag_v1_x", "tag_region_jinzhou"] },
@@ -4769,18 +4769,18 @@ complete: {
               huanglong_resonators: { title: "Huanglong Resonators", subtitle: "Character Story Episodes" },
               black_shores_resonators: { title: "Black Shores & Rinascita Resonators", subtitle: "Character Story Episodes" }
             },
-            defaultQuests: [              { id: 3001, cat: "huanglong_resonators", name: "Wild Heart's Return (Lingyang)", done: false, astrites: 100, version: "1.0", cycle: "1.X", location: "Jinzhou", req: "Reach Union Level 14 •€¢ Complete Main Quest 'Clashing Blades' (Act IV)", chests: 1, chest: true, tags: ["tag_v1_0", "tag_v1_x", "tag_astrites", "tag_region_jinzhou", "tag_chests"] },
-              { id: 3002, cat: "huanglong_resonators", name: "Daybreak at Last (Jiyan)", done: false, astrites: 100, version: "1.0", cycle: "1.X", location: "Jinzhou •€¢ Norfall Barrens", req: "Reach Union Level 21 •€¢ Complete Main Quest 'Grand Warstorm' (Act VI)", chests: 1, chest: true, tags: ["tag_v1_0", "tag_v1_x", "tag_astrites", "tag_region_jinzhou", "tag_chests"] },
-              { id: 3003, cat: "huanglong_resonators", name: "Solitary Path (Yinlin)", done: false, astrites: 100, version: "1.0", cycle: "1.X", location: "Jinzhou", req: "Reach Union Level 25 •€¢ Complete Main Quest 'Clashing Blades' (Act IV)", chests: 1, chest: true, tags: ["tag_v1_0", "tag_v1_x", "tag_astrites", "tag_region_jinzhou", "tag_chests"] },
-              { id: 3004, cat: "huanglong_resonators", name: "Immortal Blaze (Changli)", done: false, astrites: 100, version: "1.1", cycle: "1.X", location: "Mt. Firmament •€¢ Hongzhen", req: "Complete Main Quest 'Thaw of Eons' (Act VII)", chests: 1, chest: true, tags: ["tag_v1_1", "tag_v1_x", "tag_astrites", "tag_region_hongzhen", "tag_chests"] },
-              { id: 3005, cat: "huanglong_resonators", name: "True Colors (Zhezhi)", done: false, astrites: 100, version: "1.2", cycle: "1.X", location: "Jinzhou", req: "Complete 'Wish Upon the Moon I: Cry of the Soul'", chests: 1, chest: true, tags: ["tag_v1_2", "tag_v1_x", "tag_astrites", "tag_region_jinzhou", "tag_chests"] },
-              { id: 3006, cat: "huanglong_resonators", name: "Small Wooly, Big Adventures (Encore)", done: false, astrites: 100, version: "1.3", cycle: "1.X", location: "Jinzhou", req: "Complete Main Quest 'Grand Warstorm' (Act VI)", chests: 1, chest: true, tags: ["tag_v1_3", "tag_v1_x", "tag_astrites", "tag_region_jinzhou", "tag_chests"] },
-              { id: 3007, cat: "black_shores_resonators", name: "Forking Path Among the Stars (Camellya)", done: false, astrites: 100, version: "1.4", cycle: "1.X", location: "The Black Shores", req: "Complete Main Quest 'To the Shore''s End' (Act VIII)", chests: 1, chest: true, tags: ["tag_v1_4", "tag_v1_x", "tag_astrites", "tag_region_black_shores", "tag_chests"] },
-              { id: 3008, cat: "black_shores_resonators", name: "If On a Rainy Night a Family (Carlotta)", done: false, astrites: 100, version: "2.0", cycle: "2.X", location: "Rinascita •€¢ Ragunna City", req: "Complete Main Quest 'What Yesterday Wept, Today Doth Sing' (Act III)", chests: 1, chest: true, tags: ["tag_v2_0", "tag_v2_x", "tag_astrites", "tag_region_ragunna_city", "tag_chests"] },
-              { id: 3009, cat: "black_shores_resonators", name: "Starry is the Night (Roccia)", done: false, astrites: 100, version: "2.0", cycle: "2.X", location: "Rinascita •€¢ Ragunna City", req: "Complete Main Quest 'What Yesterday Wept, Today Doth Sing' (Act III)", chests: 1, chest: true, tags: ["tag_v2_0", "tag_v2_x", "tag_astrites", "tag_region_ragunna_city", "tag_chests"] },
-              { id: 3010, cat: "black_shores_resonators", name: "Sail Day, Captain! (Brant)", done: false, astrites: 100, version: "2.1", cycle: "2.X", location: "Rinascita •€¢ Riccioli Islands", req: "Complete Main Quest 'What Yesterday Wept, Today Doth Sing' (Act III)", chests: 1, chest: true, tags: ["tag_v2_1", "tag_v2_x", "tag_astrites", "tag_region_riccioli_islands", "tag_chests"] },
-              { id: 3011, cat: "black_shores_resonators", name: "A Fleeting Night's Dream (Cantarella)", done: false, astrites: 100, version: "2.2", cycle: "2.X", location: "Rinascita •€¢ Septimont", req: "Complete Main Quest 'The Maiden, The Defier, The Death Crier' (Act IV)", chests: 1, chest: true, tags: ["tag_v2_2", "tag_v2_x", "tag_astrites", "tag_region_septimont", "tag_chests"] },
-              { id: 3012, cat: "black_shores_resonators", name: "A Blaze in the Dark (Zani)", done: false, astrites: 100, version: "2.5", cycle: "2.X", location: "Rinascita •€¢ Septimont", req: "Complete Main Quest 'The Maiden, The Defier, The Death Crier' (Act IV)", chests: 1, chest: true, tags: ["tag_v2_3", "tag_v2_x", "tag_astrites", "tag_region_septimont", "tag_chests"] }
+            defaultQuests: [              { id: 3001, cat: "huanglong_resonators", name: "Wild Heart's Return (Lingyang)", done: false, astrites: 100, version: "1.0", cycle: "1.X", location: "Jinzhou", req: "Reach Union Level 14 •€¢ Complete Main Quest 'Clashing Blades' (Act IV)", tags: ["tag_v1_0", "tag_v1_x", "tag_astrites", "tag_region_jinzhou"] },
+              { id: 3002, cat: "huanglong_resonators", name: "Daybreak at Last (Jiyan)", done: false, astrites: 100, version: "1.0", cycle: "1.X", location: "Jinzhou •€¢ Norfall Barrens", req: "Reach Union Level 21 •€¢ Complete Main Quest 'Grand Warstorm' (Act VI)", tags: ["tag_v1_0", "tag_v1_x", "tag_astrites", "tag_region_jinzhou"] },
+              { id: 3003, cat: "huanglong_resonators", name: "Solitary Path (Yinlin)", done: false, astrites: 100, version: "1.0", cycle: "1.X", location: "Jinzhou", req: "Reach Union Level 25 •€¢ Complete Main Quest 'Clashing Blades' (Act IV)", tags: ["tag_v1_0", "tag_v1_x", "tag_astrites", "tag_region_jinzhou"] },
+              { id: 3004, cat: "huanglong_resonators", name: "Immortal Blaze (Changli)", done: false, astrites: 100, version: "1.1", cycle: "1.X", location: "Mt. Firmament •€¢ Hongzhen", req: "Complete Main Quest 'Thaw of Eons' (Act VII)", tags: ["tag_v1_1", "tag_v1_x", "tag_astrites", "tag_region_hongzhen"] },
+              { id: 3005, cat: "huanglong_resonators", name: "True Colors (Zhezhi)", done: false, astrites: 100, version: "1.2", cycle: "1.X", location: "Jinzhou", req: "Complete 'Wish Upon the Moon I: Cry of the Soul'", tags: ["tag_v1_2", "tag_v1_x", "tag_astrites", "tag_region_jinzhou"] },
+              { id: 3006, cat: "huanglong_resonators", name: "Small Wooly, Big Adventures (Encore)", done: false, astrites: 100, version: "1.3", cycle: "1.X", location: "Jinzhou", req: "Complete Main Quest 'Grand Warstorm' (Act VI)", tags: ["tag_v1_3", "tag_v1_x", "tag_astrites", "tag_region_jinzhou"] },
+              { id: 3007, cat: "black_shores_resonators", name: "Forking Path Among the Stars (Camellya)", done: false, astrites: 100, version: "1.4", cycle: "1.X", location: "The Black Shores", req: "Complete Main Quest 'To the Shore''s End' (Act VIII)", tags: ["tag_v1_4", "tag_v1_x", "tag_astrites", "tag_region_black_shores"] },
+              { id: 3008, cat: "black_shores_resonators", name: "If On a Rainy Night a Family (Carlotta)", done: false, astrites: 100, version: "2.0", cycle: "2.X", location: "Rinascita •€¢ Ragunna City", req: "Complete Main Quest 'What Yesterday Wept, Today Doth Sing' (Act III)", tags: ["tag_v2_0", "tag_v2_x", "tag_astrites", "tag_region_ragunna_city"] },
+              { id: 3009, cat: "black_shores_resonators", name: "Starry is the Night (Roccia)", done: false, astrites: 100, version: "2.0", cycle: "2.X", location: "Rinascita •€¢ Ragunna City", req: "Complete Main Quest 'What Yesterday Wept, Today Doth Sing' (Act III)", tags: ["tag_v2_0", "tag_v2_x", "tag_astrites", "tag_region_ragunna_city"] },
+              { id: 3010, cat: "black_shores_resonators", name: "Sail Day, Captain! (Brant)", done: false, astrites: 100, version: "2.1", cycle: "2.X", location: "Rinascita •€¢ Riccioli Islands", req: "Complete Main Quest 'What Yesterday Wept, Today Doth Sing' (Act III)", tags: ["tag_v2_1", "tag_v2_x", "tag_astrites", "tag_region_riccioli_islands"] },
+              { id: 3011, cat: "black_shores_resonators", name: "A Fleeting Night's Dream (Cantarella)", done: false, astrites: 100, version: "2.2", cycle: "2.X", location: "Rinascita •€¢ Septimont", req: "Complete Main Quest 'The Maiden, The Defier, The Death Crier' (Act IV)", tags: ["tag_v2_2", "tag_v2_x", "tag_astrites", "tag_region_septimont"] },
+              { id: 3012, cat: "black_shores_resonators", name: "A Blaze in the Dark (Zani)", done: false, astrites: 100, version: "2.5", cycle: "2.X", location: "Rinascita •€¢ Septimont", req: "Complete Main Quest 'The Maiden, The Defier, The Death Crier' (Act IV)", tags: ["tag_v2_3", "tag_v2_x", "tag_astrites", "tag_region_septimont"] }
             ]
           },
           event: {
@@ -6708,9 +6708,9 @@ complete: {
                     if (dq.cycle !== undefined) questCopy.cycle = dq.cycle;
                     if (dq.location !== undefined) questCopy.location = dq.location;
                     if (dq.req !== undefined) questCopy.req = dq.req;
-                    if (dq.chest !== undefined) questCopy.chest = dq.chest;
-                    if (dq.chests !== undefined) questCopy.chests = dq.chests;
-                    if (Array.isArray(dq.tags)) questCopy.tags = Array.isArray(pq.tags) ? pq.tags : [...dq.tags];
+                    questCopy.chest = Boolean(dq.chest);
+                    questCopy.chests = Number(dq.chests) || 0;
+                    if (Array.isArray(dq.tags)) questCopy.tags = [...dq.tags];
                   }
                   return questCopy;
                 });
@@ -6807,9 +6807,9 @@ complete: {
                 if (dq.cycle !== undefined) questCopy.cycle = dq.cycle;
                 if (dq.location !== undefined) questCopy.location = dq.location;
                 if (dq.req !== undefined) questCopy.req = dq.req;
-                if (dq.chest !== undefined) questCopy.chest = dq.chest;
-                if (dq.chests !== undefined) questCopy.chests = dq.chests;
-                if (Array.isArray(dq.tags)) questCopy.tags = Array.isArray(pq.tags) ? pq.tags : [...dq.tags];
+                questCopy.chest = Boolean(dq.chest);
+                questCopy.chests = Number(dq.chests) || 0;
+                if (Array.isArray(dq.tags)) questCopy.tags = [...dq.tags];
               }
               return questCopy;
             });
@@ -7365,19 +7365,42 @@ complete: {
     }
 
     let catKeyToDelete = null;
+    let catTabToDelete = null;
     let selectedDeleteSidebarCategory = "";
 
-    function openDeleteCategoryModal(e, catKey) {
+    function openDeleteCategoryModal(e, catKey, tabKey = null) {
       if (e) e.stopPropagation();
-      if (!catKey || catKey === "none" || !categories[catKey]) {
-        showToast("Uncategorized cannot be deleted.", "⚠️");
+      if (!catKey || catKey === "none") {
+        showToast("General category cannot be deleted.", "⚠️");
         return;
       }
       catKeyToDelete = catKey;
-      const cat = categories[catKey];
-      const count = quests.filter(q => q.cat === catKey).length;
+      catTabToDelete = tabKey || (currentTab === "all" && categories[catKey]?._tab ? categories[catKey]._tab : currentTab);
+
+      let catTitle = "Category";
+      let count = 0;
+
+      if (currentTab === "all" && categories[catKey]) {
+        catTitle = categories[catKey].title;
+        count = quests.filter(q => q.cat === catKey).length;
+      } else if (catTabToDelete === currentTab && categories[catKey]) {
+        catTitle = categories[catKey].title;
+        count = quests.filter(q => q.cat === catKey).length;
+      } else {
+        const catKeyName = `wuwa_v2_${activePreset}_${catTabToDelete}_categories`;
+        const questKeyName = `wuwa_v2_${activePreset}_${catTabToDelete}_quests`;
+        const savedCats = localStorage.getItem(catKeyName);
+        const savedQuests = localStorage.getItem(questKeyName);
+        const tabConfig = PRESETS_SCHEMA[activePreset]?.tabs[catTabToDelete];
+        const tabCats = savedCats !== null ? JSON.parse(savedCats) : JSON.parse(JSON.stringify(tabConfig?.defaultCategories || {}));
+        const tabQuests = savedQuests !== null ? JSON.parse(savedQuests) : JSON.parse(JSON.stringify(tabConfig?.defaultQuests || []));
+        const cat = tabCats[catKey];
+        if (cat) catTitle = cat.title;
+        count = tabQuests.filter(q => q.cat === catKey).length;
+      }
+
       document.getElementById("deleteCategoryConfirmText").innerHTML = `
-        Are you sure you want to delete category <strong>${cat ? cat.title : "this category"}</strong>?<br>
+        Are you sure you want to delete category <strong>"${catTitle}"</strong>?<br>
         <span style="font-size: 0.82rem; color: var(--accent-cyan); margin-top: 4px; display: block;">
           By default, all <strong>${count} quest(s)</strong> will be safely moved to <strong>Uncategorized (General)</strong>.
         </span>
@@ -7388,13 +7411,15 @@ complete: {
     }
 
     function confirmDeleteCategory() {
-      if (!catKeyToDelete || catKeyToDelete === "none" || !categories[catKeyToDelete]) return;
-      const catInfo = categories[catKeyToDelete];
-      const catTitle = catInfo.title;
-      const count = quests.filter(q => q.cat === catKeyToDelete).length;
+      if (!catKeyToDelete || catKeyToDelete === "none") return;
+      const targetTab = catTabToDelete || currentTab;
       const alsoDeleteQuests = Boolean(document.getElementById("deleteCategoryQuestsCheckbox")?.checked);
+      let catTitle = "Category";
+      let count = 0;
 
-      if (currentTab === "all" && catInfo && catInfo._tab) {
+      if (currentTab === "all" && categories[catKeyToDelete] && categories[catKeyToDelete]._tab) {
+        const catInfo = categories[catKeyToDelete];
+        catTitle = catInfo.title;
         const subCatKey = `wuwa_v2_${activePreset}_${catInfo._tab}_categories`;
         const subQuestKey = `wuwa_v2_${activePreset}_${catInfo._tab}_quests`;
         try {
@@ -7405,6 +7430,7 @@ complete: {
 
           const savedQuests = localStorage.getItem(subQuestKey);
           let parsedQuests = savedQuests !== null ? JSON.parse(savedQuests) : [];
+          count = parsedQuests.filter(q => q.cat === catInfo._origCat).length;
           if (alsoDeleteQuests) {
             parsedQuests = parsedQuests.filter(q => q.cat !== catInfo._origCat);
           } else {
@@ -7413,28 +7439,47 @@ complete: {
           localStorage.setItem(subQuestKey, JSON.stringify(parsedQuests));
         } catch(e) {}
         loadTabData("all");
-      } else {
+      } else if (targetTab === currentTab) {
+        const catInfo = categories[catKeyToDelete];
+        if (catInfo) catTitle = catInfo.title;
+        count = quests.filter(q => q.cat === catKeyToDelete).length;
         if (alsoDeleteQuests) {
           quests = quests.filter(q => q.cat !== catKeyToDelete);
         } else {
-          quests = quests.map(q => {
-            if (q.cat === catKeyToDelete) {
-              return { ...q, cat: "none" };
-            }
-            return q;
-          });
+          quests = quests.map(q => q.cat === catKeyToDelete ? { ...q, cat: "none" } : q);
         }
-
         delete categories[catKeyToDelete];
         delete collapsedCategories[catKeyToDelete];
-
-        if (selectedCategory === catKeyToDelete) {
-          selectedCategory = "none";
-        }
+        if (selectedCategory === catKeyToDelete) selectedCategory = "none";
         saveAllState();
+      } else {
+        const catKeyName = `wuwa_v2_${activePreset}_${targetTab}_categories`;
+        const questKeyName = `wuwa_v2_${activePreset}_${targetTab}_quests`;
+        const savedCats = localStorage.getItem(catKeyName);
+        const savedQuests = localStorage.getItem(questKeyName);
+        const tabConfig = PRESETS_SCHEMA[activePreset]?.tabs[targetTab];
+        let tabCats = savedCats !== null ? JSON.parse(savedCats) : JSON.parse(JSON.stringify(tabConfig?.defaultCategories || {}));
+        let tabQuests = savedQuests !== null ? JSON.parse(savedQuests) : JSON.parse(JSON.stringify(tabConfig?.defaultQuests || []));
+        
+        if (tabCats[catKeyToDelete]) catTitle = tabCats[catKeyToDelete].title;
+        count = tabQuests.filter(q => q.cat === catKeyToDelete).length;
+        if (alsoDeleteQuests) {
+          tabQuests = tabQuests.filter(q => q.cat !== catKeyToDelete);
+        } else {
+          tabQuests = tabQuests.map(q => q.cat === catKeyToDelete ? { ...q, cat: "none" } : q);
+        }
+        delete tabCats[catKeyToDelete];
+        localStorage.setItem(catKeyName, JSON.stringify(tabCats));
+        localStorage.setItem(questKeyName, JSON.stringify(tabQuests));
+
+        if (currentTab === "all") {
+          loadTabData("all");
+          saveAllState();
+        }
       }
 
       catKeyToDelete = null;
+      catTabToDelete = null;
       closeModal("deleteCategoryModal");
       renderApp();
 
@@ -7771,44 +7816,10 @@ complete: {
 
     function deleteModalCategory(catKey, tabKey = null) {
       if (!catKey || catKey === "none") {
-        showToast("Default category cannot be deleted.", "⚠️");
+        showToast("General category cannot be deleted.", "⚠️");
         return;
       }
-
-      const targetTab = tabKey || manageCategoryModalActiveTab;
-
-      if (targetTab === currentTab && currentTab !== "all") {
-        openDeleteCategoryModal(null, catKey);
-      } else {
-        const catKeyName = `wuwa_v2_${activePreset}_${targetTab}_categories`;
-        const questKeyName = `wuwa_v2_${activePreset}_${targetTab}_quests`;
-        const savedCats = localStorage.getItem(catKeyName);
-        const savedQuests = localStorage.getItem(questKeyName);
-        const tabConfig = PRESETS_SCHEMA[activePreset]?.tabs[targetTab];
-        
-        let tabCats = savedCats !== null ? JSON.parse(savedCats) : JSON.parse(JSON.stringify(tabConfig?.defaultCategories || {}));
-        let tabQuests = savedQuests !== null ? JSON.parse(savedQuests) : JSON.parse(JSON.stringify(tabConfig?.defaultQuests || []));
-        
-        const cat = tabCats[catKey];
-        if (!cat) return;
-
-        const count = tabQuests.filter(q => q.cat === catKey).length;
-        if (confirm(`Are you sure you want to delete category "${cat.title}" from ${tabConfig.name}? ${count} quest(s) will be moved to General.`)) {
-          tabQuests = tabQuests.map(q => q.cat === catKey ? { ...q, cat: "none" } : q);
-          delete tabCats[catKey];
-          localStorage.setItem(catKeyName, JSON.stringify(tabCats));
-          localStorage.setItem(questKeyName, JSON.stringify(tabQuests));
-
-          if (currentTab === "all") {
-            loadTabData("all");
-            saveAllState();
-            renderApp();
-          }
-
-          renderManageCategoriesModal();
-          showToast(`Deleted "${cat.title}". ${count} quest(s) moved to General!`, "📁");
-        }
-      }
+      openDeleteCategoryModal(null, catKey, tabKey || manageCategoryModalActiveTab);
     }
 
     function openDeleteQuestModal(e, id) {
@@ -8643,7 +8654,7 @@ complete: {
       if (typeof q.chests === "number" && q.chests > 0) {
         chestCount = q.chests;
       } else if (q.chest === true || (Array.isArray(q.tags) && q.tags.includes("tag_chests"))) {
-        chestCount = 1;
+        chestCount = typeof q.chests === "number" ? q.chests : 1;
       } else {
         const subTabs = ["main", "tutorial", "companion", "event", "exploration", "side", "daily"];
         for (const sk of subTabs) {
@@ -8653,7 +8664,7 @@ complete: {
             if (typeof dq.chests === "number" && dq.chests > 0) {
               chestCount = dq.chests;
             } else if (dq.chest === true || (Array.isArray(dq.tags) && dq.tags.includes("tag_chests"))) {
-              chestCount = 1;
+              chestCount = typeof dq.chests === "number" ? dq.chests : 1;
             }
             break;
           }
@@ -8661,11 +8672,7 @@ complete: {
       }
 
       if (chestEl) {
-        if (chestCount > 0) {
-          chestEl.textContent = chestCount === 1 ? "🎁 1 Supply Chest" : `🎁 ${chestCount} Supply Chests`;
-        } else {
-          chestEl.textContent = "None";
-        }
+        chestEl.textContent = chestCount > 0 ? `${chestCount}` : "None";
       }
 
       // Location
