@@ -2756,6 +2756,13 @@
       z-index: 20000 !important;
     }
 
+    #addCategoryModal,
+    #addCategoryModal.active,
+    #addTagModal,
+    #addTagModal.active {
+      z-index: 50000 !important;
+    }
+
     #deleteCategoryModal,
     #deleteQuestModal,
     #deleteTagModal,
@@ -2776,7 +2783,9 @@
     }
 
     #reviewMultiDeleteModal,
-    #reviewMultiDeleteModal.active {
+    #reviewMultiDeleteModal.active,
+    #reviewCategoryDeleteModal,
+    #reviewCategoryDeleteModal.active {
       z-index: 999999999 !important;
     }
 
@@ -2814,6 +2823,30 @@
       color: var(--text-dim);
       opacity: 0.6;
       transition: opacity 0.15s;
+    }
+
+    .review-status-pill {
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 3px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      flex-shrink: 0;
+      transition: all 0.15s ease;
+    }
+
+    .review-status-pill.status-delete {
+      background: rgba(239, 68, 68, 0.18);
+      color: #f87171;
+      border: 1px solid rgba(239, 68, 68, 0.35);
+    }
+
+    .review-status-pill.status-keep {
+      background: rgba(34, 197, 94, 0.18);
+      color: #4ade80;
+      border: 1px solid rgba(34, 197, 94, 0.35);
     }
 
     .review-multi-delete-item:hover .deselect-hint {
@@ -3852,6 +3885,10 @@
       background: rgba(14, 27, 46, 0.9) !important;
       border-color: rgba(56, 189, 248, 0.4) !important;
     }
+    .quest-prereq-item:hover {
+      background: rgba(14, 27, 46, 0.7) !important;
+      border-color: rgba(56, 189, 248, 0.4) !important;
+    }
   </style>
 </head>
 <body data-tab="all">
@@ -4455,13 +4492,26 @@
         <button type="button" class="btn-delete-quest" onclick="closeModal('deleteCategoryModal', event)" style="font-size: 1.1rem; opacity: 0.7;">✕</button>
       </div>
       <p id="deleteCategoryConfirmText" style="line-height: 1.45; margin-top: 10px;"></p>
-      <label class="modal-checkbox-label" style="margin-top: 10px; cursor: pointer; display: flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.25); padding: 8px 12px; border-radius: 4px; border: 1px solid var(--border-subtle);">
-        <input type="checkbox" id="deleteCategoryQuestsCheckbox" style="accent-color: var(--accent-red); width: 16px; height: 16px; cursor: pointer;">
-        <span style="font-size: 0.82rem; color: #ff8585; font-weight: 500;">Also permanently delete all quests in this category</span>
-      </label>
       <div class="modal-actions" style="margin-top: 14px;">
+        <button type="button" class="btn-secondary" onclick="openReviewCategoryDeleteModal()">Review</button>
         <button type="button" class="btn-secondary" onclick="closeModal('deleteCategoryModal', event)">Cancel</button>
-        <button type="button" class="btn-danger" onclick="confirmDeleteCategory()">Delete</button>
+        <button type="button" class="btn-danger" onclick="confirmDeleteCategory()">Remove All</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Review Category Delete Modal -->
+  <div class="modal-overlay" id="reviewCategoryDeleteModal">
+    <div class="modal-box" style="max-width: 480px;">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="color: var(--accent-red); margin: 0;">Review Quests in Category</h3>
+        <button type="button" class="btn-delete-quest" onclick="closeModal('reviewCategoryDeleteModal', event)" style="font-size: 1.1rem; opacity: 0.7;">✕</button>
+      </div>
+      <p style="margin-top: 8px; font-size: 0.78rem; color: var(--text-dim);">Click a quest to deselect it (deselected quests will be kept).</p>
+      <div class="review-multi-delete-list" id="reviewCategoryDeleteList"></div>
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" onclick="closeModal('reviewCategoryDeleteModal', event)">Back</button>
+        <button type="button" class="btn-danger" onclick="confirmDeleteCategory()">Remove All</button>
       </div>
     </div>
   </div>
@@ -4643,39 +4693,63 @@
       <!-- Tab Pills across top of modal -->
       <div class="modal-tab-pills" id="modalCategoryTabPills"></div>
 
-      <!-- Add New Category Section -->
-      <div style="background: rgba(0, 0, 0, 0.35); border: 1px solid var(--border-subtle); border-radius: 6px; padding: 12px; display: flex; flex-direction: column; gap: 10px;">
-        <span style="font-size: 0.78rem; font-weight: 700; color: var(--accent-cyan); text-transform: uppercase; letter-spacing: 0.5px;">+ Create New Category</span>
-        <div style="display: flex; flex-direction: column; gap: 8px;">
-          <div id="newCatModalTargetTabWrap" style="display: none; align-items: center; gap: 8px;">
-            <span style="font-size: 0.78rem; color: var(--text-dim); white-space: nowrap;">Target Tab:</span>
-            <select id="newCatModalTargetTab" style="background: #0d1527; border: 1px solid var(--border-subtle); color: #fff; border-radius: 4px; padding: 4px 8px; font-size: 0.8rem;">
-              <option value="main">✦ Main Quests</option>
-              <option value="tutorial">◈ Tutorial Quests</option>
-              <option value="companion">♥ Companion Stories</option>
-              <option value="event">★ Event Quests</option>
-              <option value="exploration">⚜ Exploration Quests</option>
-              <option value="side">◆ Side Quests</option>
-              <option value="daily">❖ Daily Quests</option>
-            </select>
-          </div>
-          <div style="display: flex; gap: 8px;">
-            <input type="text" id="newCatModalTitle" placeholder="Category Title..." autocomplete="off" style="flex: 1;">
-            <button type="button" onclick="submitCreateModalCategory()" class="btn-primary-theme" style="padding: 8px 14px; white-space: nowrap;">+ Add Category</button>
-          </div>
-          <input type="text" id="newCatModalSubtitle" placeholder="Subtitle / Region (Optional)..." autocomplete="off">
+      <!-- Add New Category Action Bar -->
+      <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(0, 0, 0, 0.25); border: 1px solid var(--border-subtle); border-radius: 6px; padding: 10px 12px;">
+        <div style="display: flex; flex-direction: column; gap: 2px;">
+          <span style="font-size: 0.82rem; font-weight: 700; color: var(--text-main);">Add New Category</span>
+          <span style="font-size: 0.72rem; color: var(--text-dim);">Create a custom category for organizing quests</span>
         </div>
+        <button type="button" class="btn-primary-theme btn-sm" onclick="openAddCategoryModal()" style="padding: 6px 12px; font-size: 0.78rem; font-weight: 600; white-space: nowrap;">+ Add Category</button>
       </div>
 
       <!-- Existing Categories List -->
       <div style="display: flex; flex-direction: column; gap: 8px;">
         <span style="font-size: 0.78rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px;">Categories in Selected Tab</span>
+        <div style="position: relative; width: 100%;">
+          <input type="text" id="searchManageCategoriesInput" placeholder="Search categories..." oninput="handleManageCategoriesSearch(this.value)" autocomplete="off" style="width: 100%; padding: 6px 10px 6px 28px; font-size: 0.8rem; background: rgba(0,0,0,0.3); border: 1px solid var(--border-subtle); border-radius: 4px; color: var(--text-main);">
+          <svg viewBox="0 0 24 24" width="13" height="13" fill="var(--text-dim)" style="position: absolute; left: 9px; top: 50%; transform: translateY(-50%); pointer-events: none;"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+        </div>
         <div class="manage-tags-list" id="manageCategoriesList"></div>
       </div>
 
       <div class="modal-actions">
         <button type="button" class="btn-secondary" onclick="closeModal('manageCategoriesModal', event)">Close</button>
       </div>
+    </div>
+  </div>
+
+  <!-- Standalone Add Category Modal -->
+  <div class="modal-overlay" id="addCategoryModal">
+    <div class="modal-box" style="max-width: 440px;">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="margin: 0; display: flex; align-items: center; gap: 8px;">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+            <path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/>
+          </svg>
+          <span>Create New Category</span>
+        </h3>
+        <button type="button" class="btn-delete-quest" onclick="closeModal('addCategoryModal', event)" style="font-size: 1.1rem; opacity: 0.7;">✕</button>
+      </div>
+      <form onsubmit="event.preventDefault(); submitCreateModalCategory();" style="display: flex; flex-direction: column; gap: 12px; margin-top: 10px;">
+        <div class="modal-inputs" style="display: flex; flex-direction: column; gap: 8px;">
+          <div id="newCatModalTargetTabWrap" style="display: none; flex-direction: column; gap: 4px;">
+            <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px;">Target Tab</label>
+            <div class="custom-select-wrapper" id="newCatModalTargetTabDropdown"></div>
+          </div>
+          <div>
+            <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 4px;">Category Title</label>
+            <input type="text" id="newCatModalTitle" placeholder="Category Title..." required autocomplete="off">
+          </div>
+          <div>
+            <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 4px;">Subtitle / Region (Optional)</label>
+            <input type="text" id="newCatModalSubtitle" placeholder="Subtitle / Region (Optional)..." autocomplete="off">
+          </div>
+        </div>
+        <div class="modal-actions" style="margin-top: 6px;">
+          <button type="button" class="btn-secondary" onclick="closeModal('addCategoryModal', event)">Cancel</button>
+          <button type="submit" class="btn-primary-theme">+ Add Category</button>
+        </div>
+      </form>
     </div>
   </div>
 
@@ -4692,28 +4766,59 @@
         <button type="button" class="btn-delete-quest" onclick="closeModal('manageTagsModal', event)" style="font-size: 1.1rem; opacity: 0.7;">✕</button>
       </div>
 
-      <!-- Add New Tag Section -->
-      <div style="background: rgba(0, 0, 0, 0.35); border: 1px solid var(--border-subtle); border-radius: 6px; padding: 12px; display: flex; flex-direction: column; gap: 10px;">
-        <span style="font-size: 0.78rem; font-weight: 700; color: var(--accent-cyan); text-transform: uppercase; letter-spacing: 0.5px;">+ Create New Tag</span>
-        <div style="display: flex; gap: 8px;">
-          <input type="text" id="newTagName" placeholder="Tag name (e.g. Story, High Priority)..." autocomplete="off" style="flex: 1;">
-          <button type="button" onclick="submitCreateTag()" class="btn-primary-theme" style="padding: 8px 14px; white-space: nowrap;">Add Tag</button>
+      <!-- Add New Tag Action Bar -->
+      <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(0, 0, 0, 0.25); border: 1px solid var(--border-subtle); border-radius: 6px; padding: 10px 12px;">
+        <div style="display: flex; flex-direction: column; gap: 2px;">
+          <span style="font-size: 0.82rem; font-weight: 700; color: var(--text-main);">Add New Tag</span>
+          <span style="font-size: 0.72rem; color: var(--text-dim);">Create a custom color-coded tag</span>
         </div>
-        <div>
-          <div style="font-size: 0.72rem; color: var(--text-dim); margin-bottom: 4px;">Choose Tag Color:</div>
-          <div class="color-palette-picker" id="newTagColorPalette"></div>
-        </div>
+        <button type="button" class="btn-primary-theme btn-sm" onclick="openAddTagModal()" style="padding: 6px 12px; font-size: 0.78rem; font-weight: 600; white-space: nowrap;">+ Add Tag</button>
       </div>
 
       <!-- Existing Tags List -->
       <div style="display: flex; flex-direction: column; gap: 8px;">
         <span style="font-size: 0.78rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px;">Existing Tags</span>
+        <div style="position: relative; width: 100%;">
+          <input type="text" id="searchManageTagsInput" placeholder="Search tags..." oninput="handleManageTagsSearch(this.value)" autocomplete="off" style="width: 100%; padding: 6px 10px 6px 28px; font-size: 0.8rem; background: rgba(0,0,0,0.3); border: 1px solid var(--border-subtle); border-radius: 4px; color: var(--text-main);">
+          <svg viewBox="0 0 24 24" width="13" height="13" fill="var(--text-dim)" style="position: absolute; left: 9px; top: 50%; transform: translateY(-50%); pointer-events: none;"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+        </div>
         <div class="manage-tags-list" id="manageTagsList"></div>
       </div>
 
       <div class="modal-actions">
         <button type="button" class="btn-secondary" onclick="closeModal('manageTagsModal', event)">Close</button>
       </div>
+    </div>
+  </div>
+
+  <!-- Standalone Add Tag Modal -->
+  <div class="modal-overlay" id="addTagModal">
+    <div class="modal-box" style="max-width: 440px;">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="margin: 0; display: flex; align-items: center; gap: 8px;">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+            <path d="M21.41 11.58l-9-9C12.05 2.22 11.55 2 11 2H4c-1.1 0-2 .9-2 2v7c0 .55.22 1.05.59 1.42l9 9c.36.36.86.58 1.41.58.55 0 1.05-.22 1.41-.59l7-7c.37-.36.59-.86.59-1.41 0-.55-.23-1.06-.59-1.42zM5.5 7C4.67 7 4 6.33 4 5.5S4.67 4 5.5 4 7 4.67 7 5.5 6.33 7 5.5 7z"/>
+          </svg>
+          <span>Create New Tag</span>
+        </h3>
+        <button type="button" class="btn-delete-quest" onclick="closeModal('addTagModal', event)" style="font-size: 1.1rem; opacity: 0.7;">✕</button>
+      </div>
+      <form onsubmit="event.preventDefault(); submitCreateTag();" style="display: flex; flex-direction: column; gap: 12px; margin-top: 10px;">
+        <div class="modal-inputs" style="display: flex; flex-direction: column; gap: 8px;">
+          <div>
+            <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 4px;">Tag Name</label>
+            <input type="text" id="newTagName" placeholder="Tag name (e.g. Story, High Priority)..." required autocomplete="off">
+          </div>
+          <div>
+            <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 4px;">Choose Tag Color</label>
+            <div class="color-palette-picker" id="newTagColorPalette"></div>
+          </div>
+        </div>
+        <div class="modal-actions" style="margin-top: 6px;">
+          <button type="button" class="btn-secondary" onclick="closeModal('addTagModal', event)">Cancel</button>
+          <button type="submit" class="btn-primary-theme">+ Add Tag</button>
+        </div>
+      </form>
     </div>
   </div>
 
@@ -4796,6 +4901,24 @@
           <div class="quest-info-section-content quest-info-req-box" id="questInfoRequirements">
             Available in world exploration / NPC interaction
           </div>
+        </div>
+
+        <!-- Wait Time -->
+        <div class="quest-info-section" id="questInfoWaitTimeSection" style="display: none;">
+          <div class="quest-info-section-title" style="color: #f59e0b;">
+            <svg viewBox="0 0 24 24" width="13" height="13"><path fill="currentColor" d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+            <span>Wait Time Required</span>
+          </div>
+          <div class="quest-info-section-content" id="questInfoWaitTime" style="color: #fbbf24; font-weight: 600;"></div>
+        </div>
+
+        <!-- Prerequisites -->
+        <div class="quest-info-section" id="questInfoPrereqsSection" style="display: none;">
+          <div class="quest-info-section-title">
+            <svg viewBox="0 0 24 24" width="13" height="13"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+            <span>Prerequisites</span>
+          </div>
+          <div class="quest-info-section-content" id="questInfoPrereqs" style="display: flex; flex-direction: column; gap: 4px;"></div>
         </div>
 
         <!-- Tags -->
@@ -5200,14 +5323,14 @@ complete: {
               { id: 6017, cat: "huanglong_side", name: "Investigate the theft of camp supplies", done: false, astrites: 30, version: "1.0", cycle: "1.X", location: "Jinzhou", req: "Available in world exploration / NPC interaction", chests: 1, chest: true, tags: ["tag_v1_0", "tag_v1_x", "tag_astrites", "tag_region_jinzhou", "tag_chests"] },
               { id: 6018, cat: "huanglong_side", name: "Journal of Jinzhou: Vo.1", done: false, astrites: 10, version: "1.0", cycle: "1.X", location: "Jinzhou", req: "Available in world exploration / NPC interaction", tags: ["tag_v1_0", "tag_v1_x", "tag_astrites", "tag_region_jinzhou"] },
               { id: 6019, cat: "huanglong_side", name: "Journal of Jinzhou: Vol.2", done: false, astrites: 10, version: "1.0", cycle: "1.X", location: "Jinzhou", req: "Available in world exploration / NPC interaction", tags: ["tag_v1_0", "tag_v1_x", "tag_astrites", "tag_region_jinzhou"] },
-              { id: 6020, cat: "huanglong_side", name: "Listen to Animals' Words: Translation of Bird's Language", done: false, astrites: 10, version: "1.0", cycle: "1.X", location: "Jinzhou", req: "Available in world exploration / NPC interaction", tags: ["tag_v1_0", "tag_v1_x", "tag_astrites", "tag_region_jinzhou"] },
-              { id: 6021, cat: "huanglong_side", name: "Listen to Animals' Words: Translation of Bird's Language - Sequel", done: false, astrites: 10, version: "1.0", cycle: "1.X", location: "Jinzhou", req: "Available in world exploration / NPC interaction", tags: ["tag_v1_0", "tag_v1_x", "tag_astrites", "tag_region_jinzhou"] },
-              { id: 6022, cat: "huanglong_side", name: "Listen to Animals' Words: Translation of Cat's Language", done: false, astrites: 10, version: "1.0", cycle: "1.X", location: "Jinzhou", req: "Available in world exploration / NPC interaction", tags: ["tag_v1_0", "tag_v1_x", "tag_astrites", "tag_region_jinzhou"] },
-              { id: 6023, cat: "huanglong_side", name: "Listen to Animals' Words: Translation of Dog's Language", done: false, astrites: 10, version: "1.0", cycle: "1.X", location: "Jinzhou", req: "Available in world exploration / NPC interaction", tags: ["tag_v1_0", "tag_v1_x", "tag_astrites", "tag_region_jinzhou"] },
-              { id: 6024, cat: "huanglong_side", name: "Listen to Animals' Words: Translation of Fish's Language", done: false, astrites: 10, version: "1.0", cycle: "1.X", location: "Jinzhou", req: "Available in world exploration / NPC interaction", tags: ["tag_v1_0", "tag_v1_x", "tag_astrites", "tag_region_jinzhou"] },
-              { id: 6025, cat: "huanglong_side", name: "Listen to Animals' Words: Translation of Frog's Language", done: false, astrites: 10, version: "1.0", cycle: "1.X", location: "Jinzhou", req: "Available in world exploration / NPC interaction", tags: ["tag_v1_0", "tag_v1_x", "tag_astrites", "tag_region_jinzhou"] },
-              { id: 6026, cat: "huanglong_side", name: "Listen to Animals' Words: Translation of Lizard's Language", done: false, astrites: 10, version: "1.0", cycle: "1.X", location: "Jinzhou", req: "Available in world exploration / NPC interaction", tags: ["tag_v1_0", "tag_v1_x", "tag_astrites", "tag_region_jinzhou"] },
-              { id: 6027, cat: "huanglong_side", name: "Listen to Animals' Words: Translation of Rabbit's Language", done: false, astrites: 10, version: "1.0", cycle: "1.X", location: "Jinzhou", req: "Available in world exploration / NPC interaction", tags: ["tag_v1_0", "tag_v1_x", "tag_astrites", "tag_region_jinzhou"] },
+              { id: 6020, cat: "huanglong_side", name: "Listen to Animals' Words: Translation of Bird's Language", done: false, astrites: 10, version: "1.0", cycle: "1.X", location: "Jinzhou", req: "Complete 'Translation of Cat's Language' first, then wait 24h between each part", waitTime: "24h after completing previous part in series", prereqs: [6022], tags: ["tag_v1_0", "tag_v1_x", "tag_astrites", "tag_region_jinzhou"] },
+              { id: 6021, cat: "huanglong_side", name: "Listen to Animals' Words: Translation of Bird's Language - Sequel", done: false, astrites: 10, version: "1.0", cycle: "1.X", location: "Jinzhou", req: "Complete 'Translation of Bird's Language'", waitTime: "24h after completing Bird's Language", prereqs: [6020], tags: ["tag_v1_0", "tag_v1_x", "tag_astrites", "tag_region_jinzhou"] },
+              { id: 6022, cat: "huanglong_side", name: "Listen to Animals' Words: Translation of Cat's Language", done: false, astrites: 10, version: "1.0", cycle: "1.X", location: "Jinzhou", req: "Available via NPC Xuanyin in Jinzhou - first quest in the animal language series", tags: ["tag_v1_0", "tag_v1_x", "tag_astrites", "tag_region_jinzhou"] },
+              { id: 6023, cat: "huanglong_side", name: "Listen to Animals' Words: Translation of Dog's Language", done: false, astrites: 10, version: "1.0", cycle: "1.X", location: "Jinzhou", req: "Complete 'Translation of Cat's Language' first, then wait 24h between each part", waitTime: "24h after completing previous part in series", prereqs: [6022], tags: ["tag_v1_0", "tag_v1_x", "tag_astrites", "tag_region_jinzhou"] },
+              { id: 6024, cat: "huanglong_side", name: "Listen to Animals' Words: Translation of Fish's Language", done: false, astrites: 10, version: "1.0", cycle: "1.X", location: "Jinzhou", req: "Complete 'Translation of Cat's Language' first, then wait 24h between each part", waitTime: "24h after completing previous part in series", prereqs: [6022], tags: ["tag_v1_0", "tag_v1_x", "tag_astrites", "tag_region_jinzhou"] },
+              { id: 6025, cat: "huanglong_side", name: "Listen to Animals' Words: Translation of Frog's Language", done: false, astrites: 10, version: "1.0", cycle: "1.X", location: "Jinzhou", req: "Complete 'Translation of Cat's Language' first, then wait 24h between each part", waitTime: "24h after completing previous part in series", prereqs: [6022], tags: ["tag_v1_0", "tag_v1_x", "tag_astrites", "tag_region_jinzhou"] },
+              { id: 6026, cat: "huanglong_side", name: "Listen to Animals' Words: Translation of Lizard's Language", done: false, astrites: 10, version: "1.0", cycle: "1.X", location: "Jinzhou", req: "Complete 'Translation of Cat's Language' first, then wait 24h between each part", waitTime: "24h after completing previous part in series", prereqs: [6022], tags: ["tag_v1_0", "tag_v1_x", "tag_astrites", "tag_region_jinzhou"] },
+              { id: 6027, cat: "huanglong_side", name: "Listen to Animals' Words: Translation of Rabbit's Language", done: false, astrites: 10, version: "1.0", cycle: "1.X", location: "Jinzhou", req: "Complete 'Translation of Cat's Language' first, then wait 24h between each part", waitTime: "24h after completing previous part in series", prereqs: [6022], tags: ["tag_v1_0", "tag_v1_x", "tag_astrites", "tag_region_jinzhou"] },
               { id: 6028, cat: "huanglong_side", name: "Lost History", done: false, version: "1.0", cycle: "1.X", location: "Jinzhou", req: "Available in world exploration / NPC interaction", tags: ["tag_v1_0", "tag_v1_x", "tag_region_jinzhou"] },
               { id: 6029, cat: "huanglong_side", name: "Lost Ranger", done: false, version: "1.0", cycle: "1.X", location: "Jinzhou", req: "Available in world exploration / NPC interaction", tags: ["tag_v1_0", "tag_v1_x", "tag_region_jinzhou"] },
               { id: 6030, cat: "huanglong_side", name: "Lost Taste", done: false, astrites: 25, version: "1.0", cycle: "1.X", location: "Jinzhou", req: "Available in world exploration / NPC interaction", tags: ["tag_v1_0", "tag_v1_x", "tag_astrites", "tag_region_jinzhou"] },
@@ -5876,7 +5999,17 @@ complete: {
       input.value = "";
     }
 
+    let manageTagSearchQuery = "";
+
+    function handleManageTagsSearch(query) {
+      manageTagSearchQuery = (query || "").toLowerCase().trim();
+      renderManageTagsModal();
+    }
+
     function openManageTagsModal() {
+      manageTagSearchQuery = "";
+      const searchInput = document.getElementById("searchManageTagsInput");
+      if (searchInput) searchInput.value = "";
       renderColorPalette("newTagColorPalette", selectedNewTagColor, (c) => { selectedNewTagColor = c; });
       renderManageTagsModal();
       openModal("manageTagsModal");
@@ -5918,12 +6051,28 @@ complete: {
       });
     }
 
+    function openAddTagModal() {
+      const nameInput = document.getElementById("newTagName");
+      if (nameInput) nameInput.value = "";
+      selectedNewTagColor = PRESET_TAG_COLORS[0];
+      renderColorPalette("newTagColorPalette", selectedNewTagColor, (c) => { selectedNewTagColor = c; });
+      openModal("addTagModal");
+      setTimeout(() => { if (nameInput) nameInput.focus(); }, 50);
+    }
+
     function submitCreateTag() {
       const input = document.getElementById("newTagName");
-      const name = input.value.trim();
-      if (!name) return;
-      createNewTag(name, selectedNewTagColor);
-      input.value = "";
+      const name = input ? input.value.trim() : "";
+      if (!name) {
+        showToast("Please enter a tag name.", "✕");
+        return;
+      }
+      const newTag = createNewTag(name, selectedNewTagColor);
+      if (newTag) {
+        if (input) input.value = "";
+        closeModal("addTagModal");
+        renderManageTagsModal();
+      }
     }
 
     function renderManageTagsModal() {
@@ -5934,30 +6083,51 @@ complete: {
       const usageCounts = {};
       presetTags.forEach(t => { usageCounts[t.id] = 0; });
 
-      const presetData = PRESETS_SCHEMA[activePreset];
-      presetData.tabOrder.forEach(tabKey => {
-        let tabQuests = [];
-        if (tabKey === currentTab) {
-          tabQuests = quests;
-        } else {
-          const saved = localStorage.getItem(`wuwa_v2_${activePreset}_${tabKey}_quests`);
-          if (saved) {
-            try { tabQuests = JSON.parse(saved); } catch(e) {}
-          }
-        }
-        tabQuests.forEach(q => {
+      const subTabs = ["main", "tutorial", "companion", "event", "exploration", "side", "daily"];
+      if (currentTab === "all") {
+        quests.forEach(q => {
           (q.tags || []).forEach(tid => {
             if (usageCounts[tid] !== undefined) usageCounts[tid]++;
           });
         });
-      });
+      } else {
+        subTabs.forEach(subKey => {
+          let tabQuests = [];
+          if (subKey === currentTab) {
+            tabQuests = quests;
+          } else {
+            const saved = localStorage.getItem(`wuwa_v2_${activePreset}_${subKey}_quests`);
+            const subConfig = PRESETS_SCHEMA[activePreset]?.tabs[subKey];
+            if (saved !== null) {
+              try { tabQuests = JSON.parse(saved); } catch(e) {}
+            } else if (subConfig && subConfig.defaultQuests) {
+              tabQuests = subConfig.defaultQuests;
+            }
+          }
+          tabQuests.forEach(q => {
+            (q.tags || []).forEach(tid => {
+              if (usageCounts[tid] !== undefined) usageCounts[tid]++;
+            });
+          });
+        });
+      }
+
+      let displayTags = [...presetTags];
+      if (manageTagSearchQuery) {
+        displayTags = displayTags.filter(t => t.name.toLowerCase().includes(manageTagSearchQuery));
+      }
 
       if (presetTags.length === 0) {
         container.innerHTML = `<div style="text-align: center; color: var(--text-dim); padding: 18px; font-size: 0.88rem;">No tags created yet. Use the form above to create one!</div>`;
         return;
       }
 
-      presetTags.forEach(tag => {
+      if (displayTags.length === 0) {
+        container.innerHTML = `<div style="text-align: center; color: var(--text-dim); padding: 18px; font-size: 0.88rem;">No tags match "${manageTagSearchQuery}".</div>`;
+        return;
+      }
+
+      displayTags.forEach(tag => {
         const isEditing = activeEditingTagId === tag.id;
         const count = usageCounts[tag.id] || 0;
         const row = document.createElement("div");
@@ -7695,14 +7865,13 @@ complete: {
 
     let catKeyToDelete = null;
     let catTabToDelete = null;
+    let categoryQuestsToDelete = [];
+    let categoryDeselectedQuestIds = new Set();
     let selectedDeleteSidebarCategory = "";
 
     function openDeleteCategoryModal(e, catKey, tabKey = null) {
       if (e) e.stopPropagation();
-      if (!catKey || catKey === "none") {
-        showToast("General category cannot be deleted.", "⚠️");
-        return;
-      }
+      if (!catKey) return;
 
       let resolvedTab = tabKey;
       let rawCatKey = catKey;
@@ -7719,16 +7888,10 @@ complete: {
         compCatKey = `${resolvedTab}__${catKey}`;
       }
 
-      if (rawCatKey === "none") {
-        showToast("General category cannot be deleted.", "⚠️");
-        return;
-      }
-
       catKeyToDelete = rawCatKey;
       catTabToDelete = resolvedTab;
 
-      let catTitle = "Category";
-      let count = 0;
+      let catTitle = (rawCatKey === "none") ? "General" : "Category";
 
       if (categories[compCatKey]) {
         catTitle = categories[compCatKey].title;
@@ -7742,38 +7905,121 @@ complete: {
         if (tabCats[rawCatKey]) catTitle = tabCats[rawCatKey].title;
       }
 
+      let matchingQuests = [];
       if (currentTab === "all") {
-        count = quests.filter(q => q.cat === compCatKey || (q._tab === resolvedTab && (q._origCat === rawCatKey || q.cat === rawCatKey))).length;
+        matchingQuests = quests.filter(q => {
+          if (rawCatKey === "none") {
+            return q._tab === resolvedTab && (!q.cat || q.cat === "none" || q.cat === `${resolvedTab}__none`);
+          }
+          return q.cat === compCatKey || (q._tab === resolvedTab && (q._origCat === rawCatKey || q.cat === rawCatKey));
+        });
       } else if (currentTab === resolvedTab) {
-        count = quests.filter(q => q.cat === rawCatKey || q.cat === compCatKey).length;
+        matchingQuests = quests.filter(q => {
+          if (rawCatKey === "none") {
+            return !q.cat || q.cat === "none" || !categories[q.cat];
+          }
+          return q.cat === rawCatKey || q.cat === compCatKey;
+        });
       } else {
         const questKeyName = `wuwa_v2_${activePreset}_${resolvedTab}_quests`;
         const savedQuests = localStorage.getItem(questKeyName);
         const tabConfig = PRESETS_SCHEMA[activePreset]?.tabs[resolvedTab];
         const tabQuests = savedQuests !== null ? JSON.parse(savedQuests) : JSON.parse(JSON.stringify(tabConfig?.defaultQuests || []));
-        count = tabQuests.filter(q => q.cat === rawCatKey).length;
+        const catKeyName = `wuwa_v2_${activePreset}_${resolvedTab}_categories`;
+        const savedCats = localStorage.getItem(catKeyName);
+        const tabCats = savedCats !== null ? JSON.parse(savedCats) : JSON.parse(JSON.stringify(tabConfig?.defaultCategories || {}));
+        matchingQuests = tabQuests.filter(q => {
+          if (rawCatKey === "none") {
+            return !q.cat || q.cat === "none" || !tabCats[q.cat];
+          }
+          return q.cat === rawCatKey;
+        });
       }
 
-      document.getElementById("deleteCategoryConfirmText").innerHTML = `
-        Are you sure you want to delete category <strong>"${catTitle}"</strong>?<br>
-        <span style="font-size: 0.82rem; color: var(--accent-cyan); margin-top: 4px; display: block;">
-          By default, all <strong>${count} quest(s)</strong> will be safely moved to <strong>Uncategorized (General)</strong>.
-        </span>
-      `;
-      const checkbox = document.getElementById("deleteCategoryQuestsCheckbox");
-      if (checkbox) checkbox.checked = false;
+      categoryQuestsToDelete = matchingQuests;
+      categoryDeselectedQuestIds = new Set();
+
+      const count = categoryQuestsToDelete.length;
+      const countToDelete = count - categoryDeselectedQuestIds.size;
+      
+      const confirmEl = document.getElementById("deleteCategoryConfirmText");
+      if (confirmEl) {
+        if (rawCatKey === "none") {
+          confirmEl.innerHTML = count > 0
+            ? `You are about to delete <strong>${countToDelete} quest(s)</strong> in <strong>General</strong>. This cannot be undone.`
+            : `Are you sure you want to clear the <strong>General</strong> category?`;
+        } else {
+          confirmEl.innerHTML = count > 0
+            ? `You are about to delete category <strong>"${catTitle}"</strong> and remove <strong>${countToDelete} quest(s)</strong>. This cannot be undone.`
+            : `Are you sure you want to delete category <strong>"${catTitle}"</strong>?`;
+        }
+      }
+
       openModal("deleteCategoryModal");
     }
 
+    function openReviewCategoryDeleteModal() {
+      const list = document.getElementById("reviewCategoryDeleteList");
+      if (!list) return;
+      list.innerHTML = "";
+
+      if (categoryQuestsToDelete.length === 0) {
+        list.innerHTML = `<div style="text-align: center; color: var(--text-dim); padding: 12px; font-size: 0.82rem;">No quests in this category.</div>`;
+        openModal("reviewCategoryDeleteModal");
+        return;
+      }
+
+      categoryQuestsToDelete.forEach(q => {
+        const isExcluded = categoryDeselectedQuestIds.has(q.id);
+        const row = document.createElement("div");
+        row.className = `review-multi-delete-item ${isExcluded ? "is-spared" : "is-deleting"}`;
+        if (isExcluded) {
+          row.style.opacity = "0.75";
+        }
+        row.innerHTML = `
+          <div style="display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1;">
+            <span style="font-weight: 600; ${isExcluded ? 'text-decoration: line-through; color: var(--text-dim);' : 'color: var(--text-main);'}">${q.name}</span>
+            <span style="font-size: 0.7rem; color: ${isExcluded ? 'var(--text-dim)' : 'var(--accent-red);'};">${isExcluded ? 'Will be kept (Click to delete)' : 'Will be deleted (Click to keep)'}</span>
+          </div>
+          <span class="review-status-pill ${isExcluded ? 'status-keep' : 'status-delete'}">
+            ${isExcluded ? '✓ Keeping' : '✕ Deleting'}
+          </span>
+        `;
+        row.onclick = () => {
+          if (categoryDeselectedQuestIds.has(q.id)) {
+            categoryDeselectedQuestIds.delete(q.id);
+          } else {
+            categoryDeselectedQuestIds.add(q.id);
+          }
+
+          const countToDelete = categoryQuestsToDelete.length - categoryDeselectedQuestIds.size;
+          const confirmEl = document.getElementById("deleteCategoryConfirmText");
+          if (confirmEl) {
+            let catTitle = (catKeyToDelete === "none") ? "General" : "Category";
+            if (categories[catKeyToDelete]) catTitle = categories[catKeyToDelete].title;
+            if (catKeyToDelete === "none") {
+              confirmEl.innerHTML = `You are about to delete <strong>${countToDelete} quest(s)</strong> in <strong>General</strong>. This cannot be undone.`;
+            } else {
+              confirmEl.innerHTML = `You are about to delete category <strong>"${catTitle}"</strong> and remove <strong>${countToDelete} quest(s)</strong>. This cannot be undone.`;
+            }
+          }
+
+          openReviewCategoryDeleteModal();
+        };
+        list.appendChild(row);
+      });
+
+      openModal("reviewCategoryDeleteModal");
+    }
+
     function confirmDeleteCategory() {
-      if (!catKeyToDelete || catKeyToDelete === "none" || !catTabToDelete) return;
+      if (!catKeyToDelete || !catTabToDelete) return;
       const targetTab = catTabToDelete;
       const rawCatKey = catKeyToDelete;
       const compCatKey = `${targetTab}__${rawCatKey}`;
-      const alsoDeleteQuests = Boolean(document.getElementById("deleteCategoryQuestsCheckbox")?.checked);
-      
-      let catTitle = "Category";
-      let count = 0;
+
+      const toDeleteIds = new Set(categoryQuestsToDelete.filter(q => !categoryDeselectedQuestIds.has(q.id)).map(q => q.id));
+      const deletedCount = toDeleteIds.size;
 
       const catKeyName = `wuwa_v2_${activePreset}_${targetTab}_categories`;
       const questKeyName = `wuwa_v2_${activePreset}_${targetTab}_quests`;
@@ -7784,42 +8030,57 @@ complete: {
       let tabCats = savedCats !== null ? JSON.parse(savedCats) : JSON.parse(JSON.stringify(tabConfig?.defaultCategories || {}));
       let tabQuests = savedQuests !== null ? JSON.parse(savedQuests) : JSON.parse(JSON.stringify(tabConfig?.defaultQuests || []));
 
-      if (tabCats[rawCatKey]) {
-        catTitle = tabCats[rawCatKey].title;
-      } else if (categories[compCatKey]) {
-        catTitle = categories[compCatKey].title;
-      } else if (categories[rawCatKey]) {
-        catTitle = categories[rawCatKey].title;
-      }
+      let catTitle = (rawCatKey === "none") ? "General" : "Category";
+      if (tabCats[rawCatKey]) catTitle = tabCats[rawCatKey].title;
+      else if (categories[compCatKey]) catTitle = categories[compCatKey].title;
+      else if (categories[rawCatKey]) catTitle = categories[rawCatKey].title;
 
-      count = tabQuests.filter(q => q.cat === rawCatKey).length;
+      // 1. Remove quests that were confirmed for deletion
+      tabQuests = tabQuests.filter(q => !toDeleteIds.has(q.id));
 
-      if (alsoDeleteQuests) {
-        tabQuests = tabQuests.filter(q => q.cat !== rawCatKey);
-      } else {
+      // 2. For non-General category: move kept/deselected quests to 'none' and delete category
+      if (rawCatKey !== "none") {
         tabQuests = tabQuests.map(q => q.cat === rawCatKey ? { ...q, cat: "none" } : q);
+        delete tabCats[rawCatKey];
       }
-      delete tabCats[rawCatKey];
 
       localStorage.setItem(catKeyName, JSON.stringify(tabCats));
       localStorage.setItem(questKeyName, JSON.stringify(tabQuests));
 
       if (currentTab === "all") {
+        quests = quests.filter(q => !toDeleteIds.has(q.id));
+        if (rawCatKey !== "none") {
+          quests = quests.map(q => {
+            if (q.cat === compCatKey || (q._tab === targetTab && q.cat === rawCatKey)) {
+              return { ...q, cat: `${targetTab}__none`, _origCat: "none" };
+            }
+            return q;
+          });
+          delete categories[compCatKey];
+          delete collapsedCategories[rawCatKey];
+          delete collapsedCategories[compCatKey];
+        }
         loadTabData("all");
         saveAllState();
       } else if (currentTab === targetTab) {
         categories = tabCats;
         quests = tabQuests;
-        delete collapsedCategories[rawCatKey];
-        delete collapsedCategories[compCatKey];
-        if (selectedCategory === rawCatKey || selectedCategory === compCatKey) {
-          selectedCategory = "none";
+        if (rawCatKey !== "none") {
+          delete collapsedCategories[rawCatKey];
+          delete collapsedCategories[compCatKey];
+          if (selectedCategory === rawCatKey || selectedCategory === compCatKey) {
+            selectedCategory = "none";
+          }
         }
         saveAllState();
       }
 
       catKeyToDelete = null;
       catTabToDelete = null;
+      categoryQuestsToDelete = [];
+      categoryDeselectedQuestIds.clear();
+
+      closeModal("reviewCategoryDeleteModal");
       closeModal("deleteCategoryModal");
       renderApp();
 
@@ -7827,10 +8088,10 @@ complete: {
         renderManageCategoriesModal();
       }
 
-      if (alsoDeleteQuests) {
-        showToast(`Deleted category "${catTitle}" and ${count} quest(s)!`, "🗑️");
+      if (rawCatKey === "none") {
+        showToast(`Removed ${deletedCount} quest(s) from General`, "✓");
       } else {
-        showToast(`Deleted "${catTitle}". ${count} quest(s) moved to General!`, "📁");
+        showToast(`Deleted category "${catTitle}" (${deletedCount} removed)`, "✓");
       }
     }
 
@@ -7838,11 +8099,20 @@ complete: {
     let manageCategoryModalActiveTab = null;
     let activeEditingModalCatKey = null;
     let activeEditingModalCatTab = null;
+    let manageCategorySearchQuery = "";
+
+    function handleManageCategoriesSearch(query) {
+      manageCategorySearchQuery = (query || "").toLowerCase().trim();
+      renderManageCategoriesModal();
+    }
 
     function openManageCategoriesModal(tabKey = null) {
       manageCategoryModalActiveTab = tabKey || currentTab || "all";
       activeEditingModalCatKey = null;
       activeEditingModalCatTab = null;
+      manageCategorySearchQuery = "";
+      const searchInput = document.getElementById("searchManageCategoriesInput");
+      if (searchInput) searchInput.value = "";
       renderManageCategoriesModal();
       openModal("manageCategoriesModal");
     }
@@ -7891,7 +8161,7 @@ complete: {
 
       if (manageCategoryModalActiveTab === "all") {
         // Gather all categories from all tabs
-        const allTabEntries = [];
+        let allTabEntries = [];
         subTabs.forEach(subKey => {
           const subConfig = PRESETS_SCHEMA[activePreset]?.tabs[subKey];
           if (!subConfig) return;
@@ -7931,8 +8201,18 @@ complete: {
           });
         });
 
+        if (manageCategorySearchQuery) {
+          allTabEntries = allTabEntries.filter(e => {
+            return e.catInfo.title.toLowerCase().includes(manageCategorySearchQuery) ||
+              (e.catInfo.subtitle && e.catInfo.subtitle.toLowerCase().includes(manageCategorySearchQuery)) ||
+              e.tabName.toLowerCase().includes(manageCategorySearchQuery);
+          });
+        }
+
         if (allTabEntries.length === 0) {
-          listContainer.innerHTML = `<div style="text-align: center; color: var(--text-dim); padding: 18px; font-size: 0.88rem;">No categories found across any tab. Add one above!</div>`;
+          listContainer.innerHTML = manageCategorySearchQuery
+            ? `<div style="text-align: center; color: var(--text-dim); padding: 18px; font-size: 0.88rem;">No categories match "${manageCategorySearchQuery}".</div>`
+            : `<div style="text-align: center; color: var(--text-dim); padding: 18px; font-size: 0.88rem;">No categories found across any tab. Add one above!</div>`;
           return;
         }
 
@@ -7968,11 +8248,11 @@ complete: {
                     <span>✏</span>
                     <span>Edit</span>
                   </button>
-                  <button type="button" class="btn-tag-action btn-delete" onclick="deleteModalCategory('${catKey}', '${tabKey}')">
-                    <span>🗑</span>
-                    <span>Delete</span>
-                  </button>
                 ` : ""}
+                <button type="button" class="btn-tag-action btn-delete" onclick="deleteModalCategory('${catKey}', '${tabKey}')">
+                  <span>&#128465;</span>
+                  <span>Delete</span>
+                </button>
               </div>
             `;
           }
@@ -8003,9 +8283,18 @@ complete: {
         displayCats["none"] = { title: "General", subtitle: "General Quests" };
       }
 
-      const entries = Object.entries(displayCats);
+      let entries = Object.entries(displayCats);
+      if (manageCategorySearchQuery) {
+        entries = entries.filter(([catKey, catInfo]) => {
+          return catInfo.title.toLowerCase().includes(manageCategorySearchQuery) ||
+            (catInfo.subtitle && catInfo.subtitle.toLowerCase().includes(manageCategorySearchQuery));
+        });
+      }
+
       if (entries.length === 0) {
-        listContainer.innerHTML = `<div style="text-align: center; color: var(--text-dim); padding: 18px; font-size: 0.88rem;">No categories in this tab. Add one above!</div>`;
+        listContainer.innerHTML = manageCategorySearchQuery
+          ? `<div style="text-align: center; color: var(--text-dim); padding: 18px; font-size: 0.88rem;">No categories match "${manageCategorySearchQuery}".</div>`
+          : `<div style="text-align: center; color: var(--text-dim); padding: 18px; font-size: 0.88rem;">No categories in this tab. Add one above!</div>`;
         return;
       }
 
@@ -8045,11 +8334,11 @@ complete: {
                   <span>✏</span>
                   <span>Edit</span>
                 </button>
-                <button type="button" class="btn-tag-action btn-delete" onclick="deleteModalCategory('${catKey}', '${manageCategoryModalActiveTab}')">
-                  <span>🗑</span>
-                  <span>Delete</span>
-                </button>
               ` : ""}
+              <button type="button" class="btn-tag-action btn-delete" onclick="deleteModalCategory('${catKey}', '${manageCategoryModalActiveTab}')">
+                <span>&#128465;</span>
+                <span>Delete</span>
+              </button>
             </div>
           `;
         }
@@ -8058,21 +8347,53 @@ complete: {
       });
     }
 
+    let modalAddCategoryTargetTab = "main";
+
+    function renderNewCatModalTargetTabDropdown() {
+      const tabOptions = [
+        { value: "main", label: "✦ Main Quests" },
+        { value: "tutorial", label: "◈ Tutorial Quests" },
+        { value: "companion", label: "✧ Companion Stories" },
+        { value: "event", label: "↻ Event Quests" },
+        { value: "exploration", label: "⚙ Exploration Quests" },
+        { value: "side", label: "⬡ Side Quests" },
+        { value: "daily", label: "☼ Daily Quests" }
+      ];
+      setupCustomDropdown("newCatModalTargetTabDropdown", tabOptions, modalAddCategoryTargetTab, (val) => {
+        modalAddCategoryTargetTab = val;
+        renderNewCatModalTargetTabDropdown();
+      }, "Select Target Tab...");
+    }
+
+    function openAddCategoryModal() {
+      const wrap = document.getElementById("newCatModalTargetTabWrap");
+      if (wrap) {
+        wrap.style.display = manageCategoryModalActiveTab === "all" ? "flex" : "none";
+      }
+      modalAddCategoryTargetTab = "main";
+      renderNewCatModalTargetTabDropdown();
+      const titleInput = document.getElementById("newCatModalTitle");
+      const subtitleInput = document.getElementById("newCatModalSubtitle");
+      if (titleInput) titleInput.value = "";
+      if (subtitleInput) subtitleInput.value = "";
+      openModal("addCategoryModal");
+      setTimeout(() => { if (titleInput) titleInput.focus(); }, 50);
+    }
+
     function submitCreateModalCategory() {
       const titleInput = document.getElementById("newCatModalTitle");
       const subtitleInput = document.getElementById("newCatModalSubtitle");
-      const title = titleInput.value.trim();
-      const subtitle = subtitleInput.value.trim();
+      const title = titleInput ? titleInput.value.trim() : "";
+      const subtitle = subtitleInput ? subtitleInput.value.trim() : "";
 
       if (!title) {
-        showToast("Please enter a category title.", "⚠️");
+        showToast("Please enter a category title.", "✕");
         return;
       }
 
       let targetTab = manageCategoryModalActiveTab;
       if (targetTab === "all") {
-        const picker = document.getElementById("newCatModalTargetTab");
-        targetTab = picker ? picker.value : "main";
+        targetTab = modalAddCategoryTargetTab || "main";
       }
 
       const newKey = "cat_" + Date.now();
@@ -8096,10 +8417,11 @@ complete: {
         renderApp();
       }
 
-      titleInput.value = "";
-      subtitleInput.value = "";
+      if (titleInput) titleInput.value = "";
+      if (subtitleInput) subtitleInput.value = "";
+      closeModal("addCategoryModal");
       renderManageCategoriesModal();
-      showToast(`Created category "${title}"!`, "📁");
+      showToast(`Created category "${title}"!`, "✓");
     }
 
     function startEditModalCategory(catKey, tabKey = null) {
@@ -8155,10 +8477,6 @@ complete: {
     }
 
     function deleteModalCategory(catKey, tabKey = null) {
-      if (!catKey || catKey === "none") {
-        showToast("General category cannot be deleted.", "⚠️");
-        return;
-      }
       openDeleteCategoryModal(null, catKey, tabKey || manageCategoryModalActiveTab);
     }
 
@@ -8199,31 +8517,53 @@ complete: {
       openModal("deleteQuestModal");
     }
 
+    let multiDeleteDeselectedIds = new Set();
+
     function openDeleteMultiQuestModal() {
-      const count = selectedQuestIds.length;
-      document.getElementById("deleteMultiConfirmText").innerHTML = `You are about to remove <strong>${count} selected quests</strong>. This cannot be undone.`;
+      multiDeleteDeselectedIds = new Set();
+      const countToDelete = selectedQuestIds.length - multiDeleteDeselectedIds.size;
+      document.getElementById("deleteMultiConfirmText").innerHTML = `You are about to remove <strong>${countToDelete} selected quests</strong>. This cannot be undone.`;
       openModal("deleteMultiQuestModal");
     }
 
     function openReviewMultiDeleteModal() {
       const list = document.getElementById("reviewMultiDeleteList");
+      if (!list) return;
       list.innerHTML = "";
+
+      if (selectedQuestIds.length === 0) {
+        list.innerHTML = `<div style="text-align: center; color: var(--text-dim); padding: 12px; font-size: 0.82rem;">No quests selected.</div>`;
+        openModal("reviewMultiDeleteModal");
+        return;
+      }
+
       selectedQuestIds.forEach(id => {
         const q = quests.find(item => item.id === id);
         if (!q) return;
+        const isExcluded = multiDeleteDeselectedIds.has(id);
         const row = document.createElement("div");
-        row.className = "review-multi-delete-item";
-        row.innerHTML = `<span>${q.name}</span><span class="deselect-hint">✕ Deselect</span>`;
+        row.className = `review-multi-delete-item ${isExcluded ? "is-spared" : "is-deleting"}`;
+        if (isExcluded) {
+          row.style.opacity = "0.75";
+        }
+        row.innerHTML = `
+          <div style="display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1;">
+            <span style="font-weight: 600; ${isExcluded ? 'text-decoration: line-through; color: var(--text-dim);' : 'color: var(--text-main);'}">${q.name}</span>
+            <span style="font-size: 0.7rem; color: ${isExcluded ? 'var(--text-dim)' : 'var(--accent-red);'};">${isExcluded ? 'Will be kept (Click to delete)' : 'Will be deleted (Click to keep)'}</span>
+          </div>
+          <span class="review-status-pill ${isExcluded ? 'status-keep' : 'status-delete'}">
+            ${isExcluded ? '✓ Keeping' : '✕ Deleting'}
+          </span>
+        `;
         row.onclick = () => {
-          toggleSelectQuest(id);
-          if (selectedQuestIds.length === 0) {
-            closeModal("reviewMultiDeleteModal");
-            closeModal("deleteMultiQuestModal");
-            return;
+          if (multiDeleteDeselectedIds.has(id)) {
+            multiDeleteDeselectedIds.delete(id);
+          } else {
+            multiDeleteDeselectedIds.add(id);
           }
-          // Update count in the parent modal
-          document.getElementById("deleteMultiConfirmText").innerHTML = `You are about to remove <strong>${selectedQuestIds.length} selected quests</strong>. This cannot be undone.`;
-          // Re-render review list
+          
+          const countToDelete = selectedQuestIds.length - multiDeleteDeselectedIds.size;
+          document.getElementById("deleteMultiConfirmText").innerHTML = `You are about to remove <strong>${countToDelete} selected quests</strong>. This cannot be undone.`;
           openReviewMultiDeleteModal();
         };
         list.appendChild(row);
@@ -8232,7 +8572,16 @@ complete: {
     }
 
     function confirmDeleteMultiQuests() {
-      const idsToDelete = new Set([...selectedQuestIds]);
+      const idsToDelete = new Set(selectedQuestIds.filter(id => !multiDeleteDeselectedIds.has(id)));
+      const count = idsToDelete.size;
+
+      if (count === 0) {
+        closeModal("reviewMultiDeleteModal");
+        closeModal("deleteMultiQuestModal");
+        showToast("No quests deleted", "ℹ️");
+        return;
+      }
+
       const deletedQuests = quests.filter(q => idsToDelete.has(q.id));
 
       if (currentTab === "all") {
@@ -8257,13 +8606,14 @@ complete: {
       }
 
       quests = quests.filter(item => !idsToDelete.has(item.id));
-      const count = idsToDelete.size;
-      clearQuestSelection();
+      selectedQuestIds = selectedQuestIds.filter(id => !idsToDelete.has(id));
+      multiDeleteDeselectedIds.clear();
+
       closeModal("reviewMultiDeleteModal");
       closeModal("deleteMultiQuestModal");
       saveAllState();
       renderApp();
-      showToast(`Removed ${count} quests`, "🗑️");
+      showToast(`Removed ${count} quest(s)`, "✓");
     }
 
     function confirmDeleteQuest() {
@@ -9296,6 +9646,61 @@ complete: {
     /* ==========================================================================
        QUEST INFO & DETAILS MODAL ENGINE
        ========================================================================== */
+    function getQuestPrerequisites(q) {
+      const result = {
+        questPrereqs: [],
+        unionLevel: null,
+        customReqs: []
+      };
+
+      // 1. Direct IDs in q.prereqs
+      if (Array.isArray(q.prereqs) && q.prereqs.length > 0) {
+        q.prereqs.forEach(prereqId => {
+          let targetQ = quests.find(item => item.id === prereqId);
+          if (!targetQ) {
+            const subTabs = ["main", "tutorial", "companion", "event", "exploration", "side", "daily"];
+            for (const sk of subTabs) {
+              const dq = PRESETS_SCHEMA.complete?.tabs[sk]?.defaultQuests?.find(item => item.id === prereqId);
+              if (dq) { targetQ = dq; break; }
+            }
+          }
+          if (targetQ && !result.questPrereqs.some(p => p.id === targetQ.id)) {
+            result.questPrereqs.push(targetQ);
+          }
+        });
+      }
+
+      // 2. Parse from q.req text if available
+      if (q.req && typeof q.req === "string") {
+        const ulMatch = q.req.match(/Union\s+Level\s+(\d+)/i);
+        if (ulMatch) {
+          result.unionLevel = parseInt(ulMatch[1], 10);
+        }
+
+        const quotedMatches = q.req.match(/'([^']+)'|"([^"]+)"/g);
+        if (quotedMatches) {
+          quotedMatches.forEach(raw => {
+            const name = raw.replace(/['"]/g, "").trim();
+            if (name && name.toLowerCase() !== q.name.toLowerCase()) {
+              let matchQ = quests.find(item => item.name.trim().toLowerCase() === name.toLowerCase());
+              if (!matchQ) {
+                const subTabs = ["main", "tutorial", "companion", "event", "exploration", "side", "daily"];
+                for (const sk of subTabs) {
+                  const dq = PRESETS_SCHEMA.complete?.tabs[sk]?.defaultQuests?.find(item => item.name.trim().toLowerCase() === name.toLowerCase());
+                  if (dq) { matchQ = dq; break; }
+                }
+              }
+              if (matchQ && !result.questPrereqs.some(p => p.id === matchQ.id)) {
+                result.questPrereqs.push(matchQ);
+              }
+            }
+          });
+        }
+      }
+
+      return result;
+    }
+
     function openQuestInfoModal(q) {
       if (!q) return;
 
@@ -9372,6 +9777,65 @@ complete: {
         reqEl.textContent = q.req || "Available in world exploration / NPC interaction";
       }
 
+      // Wait Time Section
+      const waitSection = document.getElementById("questInfoWaitTimeSection");
+      const waitContent = document.getElementById("questInfoWaitTime");
+      const waitVal = q.waitTime || (q.req && q.req.toLowerCase().includes("wait 24h") ? "24h real-world wait between parts" : null);
+      if (waitSection && waitContent) {
+        if (waitVal) {
+          waitSection.style.display = "flex";
+          waitContent.textContent = waitVal;
+        } else {
+          waitSection.style.display = "none";
+        }
+      }
+
+      // Prerequisites Section
+      const prereqsSection = document.getElementById("questInfoPrereqsSection");
+      const prereqsContainer = document.getElementById("questInfoPrereqs");
+      if (prereqsSection && prereqsContainer) {
+        prereqsContainer.innerHTML = "";
+        const prereqData = getQuestPrerequisites(q);
+        let hasAnyPrereq = false;
+
+        if (prereqData.unionLevel) {
+          hasAnyPrereq = true;
+          const ulRow = document.createElement("div");
+          ulRow.className = "quest-prereq-item";
+          ulRow.style.cssText = "display: flex; align-items: center; gap: 8px; padding: 6px 10px; background: rgba(0,0,0,0.3); border: 1px solid var(--border-subtle); border-radius: 4px; font-size: 0.8rem;";
+          ulRow.innerHTML = `
+            <span style="color: var(--accent-gold); font-weight: 700;">★</span>
+            <span style="color: var(--text-main);">Reach <strong>Union Level ${prereqData.unionLevel}</strong></span>
+          `;
+          prereqsContainer.appendChild(ulRow);
+        }
+
+        if (prereqData.questPrereqs.length > 0) {
+          hasAnyPrereq = true;
+          prereqData.questPrereqs.forEach(pq => {
+            const isCompleted = quests.some(item => (item.id === pq.id || item.name.trim().toLowerCase() === pq.name.trim().toLowerCase()) && item.done);
+            const pRow = document.createElement("div");
+            pRow.className = "quest-prereq-item";
+            pRow.style.cssText = "display: flex; align-items: center; justify-content: space-between; padding: 6px 10px; background: rgba(0,0,0,0.3); border: 1px solid var(--border-subtle); border-radius: 4px; font-size: 0.8rem; cursor: pointer; transition: background 0.15s, border-color 0.15s;";
+            pRow.innerHTML = `
+              <div style="display: flex; align-items: center; gap: 8px; min-width: 0;">
+                <span style="color: ${isCompleted ? 'var(--accent-green, #22c55e)' : 'var(--text-dim)'}; font-weight: 700; font-size: 0.85rem;">${isCompleted ? '✓' : '○'}</span>
+                <span style="color: var(--text-main); font-weight: 600; text-decoration: ${isCompleted ? 'none' : 'none'}; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${pq.name}</span>
+              </div>
+              <span style="font-size: 0.72rem; color: ${isCompleted ? 'var(--accent-green, #22c55e)' : 'var(--text-dim)'}; flex-shrink: 0;">${isCompleted ? 'Completed' : 'Incomplete'}</span>
+            `;
+            pRow.onclick = (e) => {
+              e.stopPropagation();
+              const liveQ = quests.find(item => item.id === pq.id || item.name.trim().toLowerCase() === pq.name.trim().toLowerCase()) || pq;
+              openQuestInfoModal(liveQ);
+            };
+            prereqsContainer.appendChild(pRow);
+          });
+        }
+
+        prereqsSection.style.display = hasAnyPrereq ? "flex" : "none";
+      }
+
       // Tags
       const tagsContainer = document.getElementById("questInfoTags");
       const tagsSection = document.getElementById("questInfoTagsSection");
@@ -9409,7 +9873,7 @@ complete: {
         copyBtn.onclick = (e) => {
           e.stopPropagation();
           copyToClipboard(q.name).then(() => {
-            showToast(`Copied "${q.name}" to clipboard!`, "📋");
+            showToast(`Copied "${q.name}" to clipboard!`, "✓");
             copyBtn.classList.add("copied");
             copyBtn.innerHTML = `<svg viewBox="0 0 24 24" width="13" height="13"><path fill="currentColor" d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg><span>Copied!</span>`;
             setTimeout(() => {
@@ -9417,7 +9881,7 @@ complete: {
               copyBtn.innerHTML = `<svg viewBox="0 0 24 24" width="13" height="13"><path fill="currentColor" d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg><span>Copy Title</span>`;
             }, 1500);
           }).catch(() => {
-            showToast(`Could not copy to clipboard.`, "⚠️");
+            showToast(`Could not copy to clipboard.`, "✕");
           });
         };
       }
@@ -10733,7 +11197,7 @@ complete: {
                 </button>
               ` : ""}
               ${catKey !== "none" ? `<button type="button" class="btn-edit-cat" onclick="openEditCategoryModal(event, '${catKey}')">Edit</button>` : ""}
-              ${catKey !== "none" ? `<button type="button" class="btn-delete-cat" onclick="openDeleteCategoryModal(event, '${catKey}')">✕ Delete</button>` : ""}
+              <button type="button" class="btn-delete-cat" onclick="openDeleteCategoryModal(event, '${catKey}')">✕ Delete</button>
               <div class="collapse-icon"></div>
             </div>
           </div>
