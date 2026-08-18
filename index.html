@@ -3318,7 +3318,7 @@
       <!-- Preset Switcher -->
       <div class="preset-panel">
         <button class="preset-btn" id="btnPresetComplete" onclick="switchPreset('complete')">
-          <span>Complete</span>
+          <span>Explorer</span>
         </button>
         <button class="preset-btn active" id="btnPresetPersonal" onclick="switchPreset('personal')">
           <span>Personal</span>
@@ -5638,7 +5638,7 @@
       quests = newQuestsList;
       saveAllState();
       renderApp();
-      showToast(`Restored ${missing.length} missing quest(s) to Complete roster!`, "✨");
+      showToast(`Restored ${missing.length} missing quest(s) to Explorer roster!`, "✨");
     }
 
     function syncCompletePresetTags() {
